@@ -6,6 +6,7 @@ import PayAccClient from "./PayAccClient";
 import PayAccStaff from "./PayAccStaff";
 import Contacts from "./Contacts";
 import ChangePassword from "./ChangePassword";
+import Debt from "./Debt";
 
 export class CustomersContainer extends Component {
   render() {
@@ -57,5 +58,11 @@ export class ContactsContainer extends Component {
 export class ChangePasswordContainer extends Component {
   render() {
     return <Dashboard screen={<ChangePassword {...this.props} />} title="Change password" />;
+  }
+}
+
+export class DebtContainer extends Component {
+  render() {
+    return <Dashboard screen={<Debt {...this.props} />} title="Debt" />;
   }
 }

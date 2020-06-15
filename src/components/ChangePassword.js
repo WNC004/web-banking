@@ -8,15 +8,76 @@ import {
   TextField,
   FormHelperText
 } from "@material-ui/core";
+import axios from "axios";
+import { signIn } from "../utils/authHelper";
 import MustBeCustomer from "./HOCs/MustBeCustomer";
 import { getUserInfo } from "../utils/authHelper";
 import * as contactsActions from "../redux/actions/contactsActions";
 import * as messageActions from "../redux/actions/messageActions";
+import { getCookie } from "tiny-cookie";
 
 class ChangePassword extends Component {
+  state = {
+    redirectToReferrer: true,
+    newPassword: "",
+    newPasswordConfirm: ""
+  };
+
+  // submit form by pressing Enter key rather than button
+
+  handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
   componentDidMount = () => {
     const customerId = getUserInfo("f_id");
     this.props.getContactsList(customerId);
+  };
+
+  handleSaveChangePassword = () => {
+    const {newPassword, newPasswordConfirm } = this.state;
+    
+    console.log("aaaa");
+    // validate username, password
+    if (newPassword === "" || newPasswordConfirm === "") return;
+
+    console.log(newPassword);
+    // submit data
+    axios
+      .post("http://localhost:3001/user/change-password", {
+        newPassword,
+        newPasswordConfirm
+      },
+      {
+        headers: {
+          "x-access-token": getCookie("access_token")
+        }
+      })
+      .then(resp => {
+        const {
+          status,
+          data: { auth, access_token, refresh_token }
+        } = resp;
+        if (status === 200 && auth === true) {
+          signIn(access_token, refresh_token);
+          this.setState({ redirectToReferrer: true });
+        } else {
+          this.setState({
+            messageType: "error",
+            isMessageOpen: true,
+            message: "Email or password was wrong"
+          });
+          throw new Error(
+            "Something went wrong when signing in, status ",
+            status
+          );
+        }
+      })
+      .catch(err => {
+        this.setState({
+          messageType: "error",
+          isMessageOpen: true,
+          message: "Email or password was wrong"
+        });
+        console.log(err);
+      });
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -33,43 +94,36 @@ class ChangePassword extends Component {
       toNickName,
       reload
     } = this.props;
+    console.log(contacts);
 
     return (
       <React.Fragment>
-        <Paper className="contacts paper">
+        <Paper className="paper">
           <div>
             <Typography variant="title" component="h1">
-              Create new contact
+              Change password
             </Typography>
-            <div>
-              <div>
-                <TextField
-                  id="oldPassword"
-                  label="Old Password *"
-                  autoFocus
-                  fullWidth
-                  margin="normal"
-                  onChange={this.props.handleInputChange}
-                  name="oldPassword"
-                  value={toAccNumber}
-                />
-                {toAccNumber !== "" &&
-                  contacts.find(
-                    contact => contact.toAccNumber === toAccNumber.trim()
-                  ) && (
-                    <FormHelperText style={{ color: "red" }}>
-                      This account already existed in your contacts
-                    </FormHelperText>
-                  )}
-              </div>
+            
               <div>
                 <TextField
                   id="newPassword"
                   label="New Password *"
+                  type="password"
                   fullWidth
                   margin="normal"
-                  onChange={this.props.handleInputChange}
+                  onChange={this.handleInputChange}
                   name="newPassword"
+                />
+              </div>
+              <div>
+                <TextField
+                  id="newPasswordConfirm"
+                  label="New Password Confirm *"
+                  type="password"
+                  fullWidth
+                  margin="normal"
+                  onChange={this.handleInputChange}
+                  name="newPasswordConfirm"
                 />
               </div>
               <div>
@@ -77,26 +131,12 @@ class ChangePassword extends Component {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  onClick={() =>
-                    this.props.handleCreateContact(
-                      getUserInfo("f_id"),
-                      toAccNumber,
-                      toNickName,
-                      reload
-                    )
-                  }
-                  disabled={
-                    toAccNumber.trim() === "" ||
-                    contacts.find(
-                      contact => contact.toAccNumber === toAccNumber.trim()
-                    )
-                  }
+                  onClick={this.handleSaveChangePassword}
                 >
-                  create contact
+                  Save change
                 </Button>
               </div>
             </div>
-          </div>
         </Paper>
       </React.Fragment>
     );

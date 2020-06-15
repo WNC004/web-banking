@@ -9,7 +9,8 @@ import {
   PayAccClientContainer,
   PayAccStaffContainer,
   ContactsContainer,
-  ChangePasswordContainer
+  ChangePasswordContainer,
+  DebtContainer
 } from "./components/DashContainer";
 
 const routes = [
@@ -66,6 +67,12 @@ const routes = [
     isPrivate: true,
     exact: true,
     comp: props => <ChangePasswordContainer {...props} />
+  },
+  {
+    path: "/debt",
+    isPrivate: true,
+    exact: true,
+    comp: props => <DebtContainer {...props} />
   },
   {
     path: "/somewhere-the-God-only-knows",

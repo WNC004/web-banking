@@ -133,7 +133,7 @@ export default class SignIn extends React.Component {
               />
               <div className="captcha-container">
                 <Recaptcha
-                  sitekey="6LfCAoUUAAAAAPHQTGofRMltqShtjI9L9wvl90LG"
+                  sitekey="6Ld9paMZAAAAABRo0ITeyF3bZLnGf47y0k9bVJy_"
                   render="explicit"
                   onloadCallback={() => true}
                   verifyCallback={this.handleCaptchaVerify}

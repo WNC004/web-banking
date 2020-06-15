@@ -34,6 +34,14 @@ export const mainListItems = (
         <ListItemText primary="Contacts" />
       </ListItem>
     </Link>
+    <Link to="/debt">
+      <ListItem button>
+        <ListItemIcon>
+          <ContactsIcon />
+        </ListItemIcon>
+        <ListItemText primary="Debt" />
+      </ListItem>
+    </Link>
     <Link to="/change-password">
       <ListItem button>
         <ListItemIcon>

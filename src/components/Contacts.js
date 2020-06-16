@@ -39,6 +39,8 @@ class Contacts extends Component {
       reload
     } = this.props;
 
+    console.log(contacts);
+
     const data = contacts.map((contact, index) => {
       const { toAccNumber, toNickName, createdAt } = contact;
       return [

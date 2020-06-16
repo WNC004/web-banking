@@ -12,45 +12,63 @@ import MUIDataTable from "mui-datatables";
 import Message from "./Message";
 import MustBeCustomer from "./HOCs/MustBeCustomer";
 import { getUserInfo } from "../utils/authHelper";
-import * as contactsActions from "../redux/actions/contactsActions";
+import * as debtsActions from "../redux/actions/debtActions";
 import * as messageActions from "../redux/actions/messageActions";
 
 class Debts extends Component {
   componentDidMount = () => {
     const customerId = getUserInfo("f_id");
-    this.props.getContactsList(customerId);
+    this.props.getDebtsList(customerId);
+    this.props.getDebtsListForOther(customerId);
   };
 
   componentDidUpdate = (prevProps, prevState) => {
     if (prevProps.reload !== this.props.reload) {
       const customerId = getUserInfo("f_id");
-      this.props.getContactsList(customerId);
+      this.props.getDebtsList(customerId);
+      this.props.getDebtsListForOther(customerId);
     }
   };
 
   render() {
     const {
-      contacts,
-      messageType,
-      isMessageOpen,
+      debtsOwner,
+      debtsOther,
+      account,
       message,
-      toAccNumber,
-      toNickName,
+      amount,
       reload
     } = this.props;
 
-    const data = contacts.map((contact, index) => {
-      const { toAccNumber, toNickName, createdAt } = contact;
+    const data = debtsOwner.map((debt, index) => {
+      const { account, message, createdAt, amount, type } = debt;
       return [
         index + 1,
-        toAccNumber,
-        toNickName,
+        account,
+        message,
+        amount,
+        type,
+        createdAt,
+        <Button variant="contained" color="primary">
+          Send notification
+        </Button>
+      ];
+    });
+
+    const dataOther = debtsOther.map((debt, index) => {
+      const { account, message, createdAt, amount, type } = debt;
+      return [
+        index + 1,
+        account,
+        message,
+        amount,
+        type,
         createdAt,
         <Button variant="contained" color="primary">
           <Link
             to={{
               pathname: "/internal-transfers",
-              state: { receiverPayAccNumber: toAccNumber }
+              state: { receiverPayAccNumber: account }
             }}
             style={{ color: "white" }}
           >
@@ -64,8 +82,9 @@ class Debts extends Component {
       "#",
       "Account number",
       "Name",
-      "Email",
       "Amount",
+      "Type",
+      "CreatedAt",
       "Action"
     ];
 
@@ -83,27 +102,27 @@ class Debts extends Component {
         <Paper className="sign-up paper form-2-cols">
           <div>
             <Typography variant="title" component="h1">
-              Create new contact
+              Create new debt
             </Typography>
             <div>
                 <TextField
-                  id="contactNumber"
+                  id="account"
                   label="Account number *"
                   autoFocus
                   fullWidth
                   margin="normal"
                   onChange={this.props.handleInputChange}
-                  name="toAccNumber"
-                  value={toAccNumber}
+                  name="account"
+                  value={account}
                 />
-                {toAccNumber !== "" &&
+                {/* {toAccNumber !== "" &&
                   contacts.find(
                     contact => contact.toAccNumber === toAccNumber.trim()
                   ) && (
                     <FormHelperText style={{ color: "red" }}>
                       This account already existed in your contacts
                     </FormHelperText>
-                  )}
+                  )} */}
                 <TextField
                   id="amount"
                   label="Amount *"
@@ -127,21 +146,22 @@ class Debts extends Component {
                   color="primary"
                   fullWidth
                   onClick={() =>
-                    this.props.handleCreateContact(
+                    this.props.handleCreateDebt(
                       getUserInfo("f_id"),
-                      toAccNumber,
-                      toNickName,
+                      account,
+                      message,
+                      amount,
                       reload
                     )
                   }
-                  disabled={
-                    toAccNumber.trim() === "" ||
-                    contacts.find(
-                      contact => contact.toAccNumber === toAccNumber.trim()
-                    )
-                  }
+                  // disabled={
+                  //   toAccNumber.trim() === "" ||
+                  //   contacts.find(
+                  //     contact => contact.toAccNumber === toAccNumber.trim()
+                  //   )
+                  // }
                 >
-                  create contact
+                  create debt
                 </Button>
               </div>
             </div>
@@ -157,39 +177,41 @@ class Debts extends Component {
 
         <MUIDataTable
           title={"Owner debt list"}
-          data={data}
+          data={dataOther}
           columns={columns}
           options={options}
         />
 
-        <Message
+        {/* <Message
           variant={messageType}
-          message={message}
           open={isMessageOpen}
           onClose={this.props.closeMessage}
-        />
+        /> */}
       </React.Fragment>
     );
   }
 }
 
 const mapStateToProps = state => ({
-  ...state.contacts
+  ...state.debts
 });
 
 const mapDispatchToProps = dispatch => ({
-  getContactsList: customerId =>
-    dispatch(contactsActions.getContactsList(customerId)),
-  handleCreateContact: (customerId, toAccNumber, toNickName, reload) =>
+  getDebtsList: customerId =>
+    dispatch(debtsActions.getDebtsList(customerId)),
+  getDebtsListForOther: customerId =>
+    dispatch(debtsActions.getDebtsListForOther(customerId)),
+  handleCreateDebt: (creditor_id, account, message, amount, reload) =>
     dispatch(
-      contactsActions.handleCreateContact(
-        customerId,
-        toAccNumber,
-        toNickName,
+      debtsActions.handleCreateDebt(
+        creditor_id,
+        account,
+        message,
+        amount,
         reload
       )
     ),
-  handleInputChange: e => dispatch(contactsActions.handleInputChange(e)),
+  handleInputChange: e => dispatch(debtsActions.handleInputChange(e)),
   closeMessage: () => dispatch(messageActions.closeMessage())
 });
 

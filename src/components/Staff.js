@@ -11,7 +11,7 @@ import {
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
 import CreateAccount from "./CreateAccount";
-import MustBeStaff from "./HOCs/MustBeStaff";
+import MustBeAdmin from "./HOCs/MustBeAdmin";
 import * as customersActions from "../redux/actions/customersActions";
 import * as messageActions from "../redux/actions/messageActions";
 
@@ -192,7 +192,7 @@ const mapDispatchToProps = dispatch => ({
   closeMessage: () => dispatch(messageActions.closeMessage())
 });
 
-export default MustBeStaff(
+export default MustBeAdmin(
   connect(
     mapStateToProps,
     mapDispatchToProps

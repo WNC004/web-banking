@@ -18,6 +18,10 @@ import {
 } from "@material-ui/icons";
 import LetterAvatar from "./LetterAvatar";
 import {
+  mainListItems as mainListItemsAdmin,
+  secondaryListItems as secondaryListItemsAdmin
+} from "./listItemsAdmin";
+import {
   mainListItems as mainListItemsStaff,
   secondaryListItems as secondaryListItemsStaff
 } from "./listItemsStaff";
@@ -110,6 +114,7 @@ const styles = theme => ({
   }
 });
 
+
 class Dashboard extends React.Component {
   state = {
     open: true
@@ -123,9 +128,29 @@ class Dashboard extends React.Component {
     this.setState({ open: false });
   };
 
+
+
   render() {
     const { classes, screen, title } = this.props;
     const userType = getUserInfo("f_type");
+
+    function getMainListItems() {
+        if(userType===1) 
+          return mainListItemsClient;
+        else if(userType===2)
+          return mainListItemsStaff;
+        else 
+          return mainListItemsAdmin;
+    }
+
+    function getSecondListItems() {
+      if(userType===1) 
+        return secondaryListItemsClient;
+      else if(userType===2)
+        return secondaryListItemsStaff;
+      else 
+        return secondaryListItemsAdmin;
+  }
 
     return (
       <div className={classes.root}>
@@ -181,13 +206,15 @@ class Dashboard extends React.Component {
           </div>
           <Divider />
           <List>
-            {userType === 2 ? mainListItemsStaff : mainListItemsClient}
+            {/* {userType === 2 ? mainListItemsStaff : mainListItemsClient} */}
+            {getMainListItems()}
           </List>
           <Divider />
           <List>
-            {userType === 2
+            {/* {userType === 2
               ? secondaryListItemsStaff
-              : secondaryListItemsClient}
+              : secondaryListItemsClient} */}
+            {getSecondListItems()}
           </List>
         </Drawer>
         <main className={classes.content}>

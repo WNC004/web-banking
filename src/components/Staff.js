@@ -5,29 +5,49 @@ import {
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
-import CreateAccount from "./CreateAccount";
 import CreateStaff from "./CreateStaff";
 import MustBeAdmin from "./HOCs/MustBeAdmin";
-import * as customersActions from "../redux/actions/customersActions";
 import * as messageActions from "../redux/actions/messageActions";
+import * as staffsActions from "../redux/actions/staffsActions";
+import * as customersActions from "../redux/actions/customersActions";
+
 
 class Staffs extends Component {
   componentDidMount = () => {
-    this.props.getCustomersList();
+    this.props.getStaffsList();
   };
 
   render() {
-    const {
-      customers,
+    // const {
+    //   customers
+    // } = this.props;
 
+    const {
+      staffs
     } = this.props;
 
-    const data = customers.map((customer, index) => [
+    console.log(staffs);
+
+    // const data = customers.map((customer, index) => [
+    //   index + 1,
+    //   customer.email,
+    //   customer.name,
+    //   customer.phone,
+    //   customer.createdAt,
+    //   <Button
+    //     variant="contained"
+    //     color="primary"
+    //   >
+    //     Edit
+    //   </Button>
+    // ]);
+
+    const data = staffs.map((staff, index) => [
       index + 1,
-      customer.email,
-      customer.name,
-      customer.phone,
-      customer.createdAt,
+      staff.email,
+      staff.name,
+      staff.phone,
+      staff.createdAt,
       <Button
         variant="contained"
         color="primary"
@@ -49,8 +69,7 @@ class Staffs extends Component {
 
     return (
       <React.Fragment>
-        {/* <CreateAccount onCreateAccountSucceed={this.props.getCustomersList} /> */}
-        <CreateStaff onCreateAccountSucceed={this.props.getCustomersList}/>
+        <CreateStaff onCreateAccountSucceed={this.props.getStaffsList}/>
         <MUIDataTable
           title={"Staffs list"}
           data={data}
@@ -64,33 +83,12 @@ class Staffs extends Component {
 }
 
 const mapStateToProps = state => ({
-  ...state.customers
+  ...state.staffs
 });
 
 const mapDispatchToProps = dispatch => ({
   getCustomersList: () => dispatch(customersActions.getCustomersList()),
-  handleCreatePayAcc: (customerId, clientEmail, clientName, phone) =>
-    dispatch(
-      customersActions.handleCreatePayAcc(
-        customerId,
-        clientEmail,
-        clientName,
-        phone
-      )
-    ),
-  openCreatePayAccConfirmDialog: (customerId, clientEmail, clientName, phone) =>
-    dispatch(
-      customersActions.openCreatePayAccConfirmDialog(
-        customerId,
-        clientEmail,
-        clientName,
-        phone
-      )
-    ),
-  closeCreatePayAccConfirmDialog: () =>
-    dispatch(customersActions.closeCreatePayAccConfirmDialog()),
-  closeCreatePayAccOperatedDialog: () =>
-    dispatch(customersActions.closeCreatePayAccOperatedDialog()),
+  getStaffsList: () => dispatch(staffsActions.getStaffsList()),
   closeMessage: () => dispatch(messageActions.closeMessage())
 });
 

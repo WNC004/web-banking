@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import {
   People as PeopleIcon,
-  BarChart as BarChartIcon,
   Person as PersonIcon
 } from "@material-ui/icons";
 

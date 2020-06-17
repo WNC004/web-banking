@@ -7,7 +7,7 @@ import PayAccStaff from "./PayAccStaff";
 import Contacts from "./Contacts";
 import ChangePassword from "./ChangePassword";
 import Debt from "./Debt";
-import Staff from "./Staff";
+import Staffs from "./Staff";
 
 
 export class CustomersContainer extends Component {
@@ -71,6 +71,8 @@ export class DebtContainer extends Component {
 
 export class StaffsContainer extends Component {
   render() {
-    return <Dashboard screen={<Staff {...this.props} />} title="Staffs" />;
+    return (
+    <Dashboard screen={<Staffs {...this.props} />} title="Staffs" />
+    );
   }
 }

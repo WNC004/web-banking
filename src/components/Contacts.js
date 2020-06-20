@@ -39,7 +39,8 @@ class Contacts extends Component {
       reload
     } = this.props;
 
-    console.log(contacts);
+
+    console.log(messageType);
 
     const data = contacts.map((contact, index) => {
       const { toAccNumber, toNickName, createdAt } = contact;

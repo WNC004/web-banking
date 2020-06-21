@@ -232,6 +232,46 @@ class Debts extends Component {
           })
   }
 
+  handleNotify = (id, email_debtor)=>{
+    axios
+    .post(`http://localhost:3001/debt/notify/`, 
+    {
+      id,
+      email_debtor
+    },
+    {
+      headers: {
+        "x-access-token": getCookie("access_token")
+      }
+    })
+    .then(resp => {
+      const { status } = resp;
+      if (status === 200) {
+        this.setState({
+        messageType: "success",
+        isMessageOpen: true,
+        message: "Successfully Send notication",
+        isDialogClosePayAccOpen: false,
+        debtId: ""
+      });
+      this.getListDebts();
+      this.getListDebtOthers();
+      } else {
+        this.setState({
+          messageType: "error",
+          isMessageOpen: true,
+          message: "Failed Send notication",
+          isDialogClosePayAccOpen: false,
+          debtId: ""
+        });
+        throw new Error(
+          "Something went wrong when getting contacts list, status ",
+          status
+        );
+      }
+    })
+  }
+
   render() {
      const {
       debtsOwner,
@@ -257,7 +297,7 @@ class Debts extends Component {
         email_debtor,
         createdAt,
         <div>
-        <Button variant="contained" color="primary">
+        <Button variant="contained" color="primary" onClick={() => this.handleNotify(id, email_debtor)}>
           Notify
         </Button>
         <Button variant="contained" color="secondary" onClick={() => this.onClosePayAcc(id)}>

@@ -42,9 +42,9 @@ export const getDebtsList = customerId => dispatch =>
       console.log(err);
     });
 
-export const getDebtsListForOther = customerId => dispatch =>
+export const getAllAccount = () =>dispatch =>
   axios
-    .get(`http://localhost:3001/debts/other/${customerId}`, {
+    .get(`http://localhost:3001/pay-accs`, {
       headers: {
         "x-access-token": getCookie("access_token")
       }
@@ -53,7 +53,7 @@ export const getDebtsListForOther = customerId => dispatch =>
       const { status, data: debts } = resp;
       if (status === 200) {
         dispatch({
-          type: debtsConstants.GET_DEBTS_OTHER_LIST_SUCCEED,
+          type: debtsConstants.GET_ALL_ACCOUNT,
           payload: debts
         });
       } else {
@@ -81,9 +81,48 @@ export const getDebtsListForOther = customerId => dispatch =>
       console.log(err);
     });
 
+    export const getDebtsListForOther = customerId => dispatch =>
+    axios
+      .get(`http://localhost:3001/debts/other/${customerId}`, {
+        headers: {
+          "x-access-token": getCookie("access_token")
+        }
+      })
+      .then(resp => {
+        const { status, data: debts } = resp;
+        if (status === 200) {
+          dispatch({
+            type: debtsConstants.GET_DEBTS_OTHER_LIST_SUCCEED,
+            payload: debts
+          });
+        } else {
+          dispatch({
+            type: messageConstants.OPEN_MESSAGE,
+            payload: {
+              messageType: "error",
+              message: "Sorry, failed getting contacts list"
+            }
+          });
+          throw new Error(
+            "Something went wrong when getting contacts list, status ",
+            status
+          );
+        }
+      })
+      .catch(err => {
+        dispatch({
+          type: messageConstants.OPEN_MESSAGE,
+          payload: {
+            messageType: "error",
+            message: "Sorry, failed getting contacts list"
+          }
+        });
+        console.log(err);
+      });
+
 export const handleCreateDebt = (
   account,
-  message,
+  msg,
   amount,
   reload
 ) => dispatch => {
@@ -92,7 +131,7 @@ export const handleCreateDebt = (
         "http://localhost:3001/debt",
         {
           account,
-          message,
+          msg,
           amount
         },
         {
@@ -103,6 +142,9 @@ export const handleCreateDebt = (
       )
       .then(resp => {
         const { status } = resp;
+        const msg = resp.data.message;
+        console.log(status);
+        console.log(msg);
         if (status === 201) {
           dispatch({
             type: debtsConstants.HANDLE_CREATE_DEBT_SUCCEED,
@@ -110,7 +152,7 @@ export const handleCreateDebt = (
               reload: !reload,
               messageType: "success",
               isMessageOpen: true,
-              message: "Successfully created new contact"
+              message: "Successfully created new debt"
             }
           });
         } else {
@@ -118,13 +160,14 @@ export const handleCreateDebt = (
             type: messageConstants.OPEN_MESSAGE,
             payload: {
               messageType: "error",
-              message: "Sorry, failed creating new contact"
+              isMessageOpen: true,
+              message: "Sorry, failed creating new debt"
             }
           });
-          throw new Error(
-            "Something went wrong when creating new contact, status ",
-            status
-          );
+          // throw new Error(
+          //   "Something went wrong when creating new debt, status ",
+          //   status
+          // );
         }
       })
       .catch(err => {
@@ -132,6 +175,7 @@ export const handleCreateDebt = (
           type: messageConstants.OPEN_MESSAGE,
           payload: {
             messageType: "error",
+            isMessageOpen: true,
             message: "Sorry, failed creating new contact"
           }
         });

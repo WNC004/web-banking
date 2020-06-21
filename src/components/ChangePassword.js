@@ -1,47 +1,53 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
 import {
   Button,
   Paper,
   Typography,
-  TextField,
-  FormHelperText
+  TextField
 } from "@material-ui/core";
 import axios from "axios";
-import { signIn } from "../utils/authHelper";
-import MustBeCustomer from "./HOCs/MustBeCustomer";
+import Message from "./Message";
 import { getUserInfo } from "../utils/authHelper";
-import * as contactsActions from "../redux/actions/contactsActions";
-import * as messageActions from "../redux/actions/messageActions";
 import { getCookie } from "tiny-cookie";
 
 class ChangePassword extends Component {
   state = {
-    redirectToReferrer: true,
+    id : getUserInfo("f_id"),
+    messageType: "",
+    isMessageOpen: "",
+    message: "",
     newPassword: "",
     newPasswordConfirm: ""
   };
 
   // submit form by pressing Enter key rather than button
 
-  handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
-  componentDidMount = () => {
-    const customerId = getUserInfo("f_id");
-    this.props.getContactsList(customerId);
+  handleCloseMessage = () => {
+    this.setState({ isMessageOpen: false, message: "" });
   };
 
+  handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
+ 
   handleSaveChangePassword = () => {
-    const {newPassword, newPasswordConfirm } = this.state;
+    const {newPassword, newPasswordConfirm, id } = this.state;
     
-    console.log("aaaa");
+    console.log(newPassword);
     // validate username, password
     if (newPassword === "" || newPasswordConfirm === "") return;
 
+    if (newPassword != newPasswordConfirm){
+      this.setState({
+        messageType: "error",
+        isMessageOpen: true,
+        message: "New Password confirm and New Password are difficult!"
+      });
+      return;
+    }
     console.log(newPassword);
     // submit data
     axios
-      .post("http://localhost:3001/user/change-password", {
+      .post("http://localhost:3001/customer/change-password", {
+        id,
         newPassword,
         newPasswordConfirm
       },
@@ -52,17 +58,20 @@ class ChangePassword extends Component {
       })
       .then(resp => {
         const {
-          status,
-          data: { auth, access_token, refresh_token }
+          status
         } = resp;
-        if (status === 200 && auth === true) {
-          signIn(access_token, refresh_token);
-          this.setState({ redirectToReferrer: true });
+        if (status === 201) {
+          this.setState({
+            messageType: "success",
+            isMessageOpen: true,
+            message: "Successfully Change Password!"
+          });
+                  
         } else {
           this.setState({
             messageType: "error",
             isMessageOpen: true,
-            message: "Email or password was wrong"
+            message: "Failed Change Password!"
           });
           throw new Error(
             "Something went wrong when signing in, status ",
@@ -74,27 +83,19 @@ class ChangePassword extends Component {
         this.setState({
           messageType: "error",
           isMessageOpen: true,
-          message: "Email or password was wrong"
+          message: "Failed Change Password!"
         });
         console.log(err);
       });
   };
 
-  componentDidUpdate = (prevProps, prevState) => {
-    if (prevProps.reload !== this.props.reload) {
-      const customerId = getUserInfo("f_id");
-      this.props.getContactsList(customerId);
-    }
-  };
-
+  
   render() {
-    const {
-      contacts,
-      toAccNumber,
-      toNickName,
-      reload
-    } = this.props;
-    console.log(contacts);
+    // // const {
+    // //   newPassword,
+    // //   newPasswordConfirm
+    // // } = this.props;
+    // console.log(newPassword);
 
     return (
       <React.Fragment>
@@ -138,34 +139,16 @@ class ChangePassword extends Component {
               </div>
             </div>
         </Paper>
+        <Message
+          variant={this.state.messageType}
+          message={this.state.message}
+          open={this.state.isMessageOpen}
+          onClose={this.handleCloseMessage}
+        />
       </React.Fragment>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  ...state.contacts
-});
 
-const mapDispatchToProps = dispatch => ({
-  getContactsList: customerId =>
-    dispatch(contactsActions.getContactsList(customerId)),
-  handleCreateContact: (customerId, toAccNumber, toNickName, reload) =>
-    dispatch(
-      contactsActions.handleCreateContact(
-        customerId,
-        toAccNumber,
-        toNickName,
-        reload
-      )
-    ),
-  handleInputChange: e => dispatch(contactsActions.handleInputChange(e)),
-  closeMessage: () => dispatch(messageActions.closeMessage())
-});
-
-export default MustBeCustomer(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(ChangePassword)
-);
+export default (ChangePassword);

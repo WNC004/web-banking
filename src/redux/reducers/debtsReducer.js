@@ -4,7 +4,7 @@ const initState = {
   debtsOwner: [],
   debtsOther: [],
   account: "",
-  message: "",
+  msg: "",
   amount: "",
   accountAll: [],
   reload: false
@@ -17,9 +17,11 @@ const debtsReducer = (state = initState, action) => {
     case debtsConstants.GET_DEBTS_OTHER_LIST_SUCCEED:
       return { ...state, debtsOther: action.payload };
     case debtsConstants.HANDLE_CREATE_DEBT_SUCCEED:
-      return { ...state, account: "", message: "",  amount: "", ...action.payload };
+      return { ...state, account: "", msg: "",  amount: "", ...action.payload };
     case debtsConstants.HANDLE_INPUT_CHANGE:
       return { ...state, [action.payload.name]: action.payload.value };
+    case debtsConstants.GET_ALL_ACCOUNT:
+      return { ...state, accountAll: action.payload };
     default:
       return state;
   }

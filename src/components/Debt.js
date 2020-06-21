@@ -6,7 +6,6 @@ import {
   Paper,
   Typography,
   TextField,
-  FormHelperText
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
@@ -35,17 +34,22 @@ class Debts extends Component {
       debtsOwner,
       debtsOther,
       account,
+      messageType,
+      isMessageOpen,
       message,
+      msg,
       amount,
       reload
     } = this.props;
+    console.log(debtsOwner);
+    console.log(messageType);
 
     const data = debtsOwner.map((debt, index) => {
-      const { account, message, createdAt, amount, type } = debt;
+      const { account, msg, createdAt, amount, type } = debt;
       return [
         index + 1,
         account,
-        message,
+        msg,
         amount,
         type,
         createdAt,
@@ -56,11 +60,11 @@ class Debts extends Component {
     });
 
     const dataOther = debtsOther.map((debt, index) => {
-      const { account, message, createdAt, amount, type } = debt;
+      const { account, msg, createdAt, amount, type } = debt;
       return [
         index + 1,
         account,
-        message,
+        msg,
         amount,
         type,
         createdAt,
@@ -115,14 +119,7 @@ class Debts extends Component {
                   name="account"
                   value={account}
                 />
-                {/* {toAccNumber !== "" &&
-                  contacts.find(
-                    contact => contact.toAccNumber === toAccNumber.trim()
-                  ) && (
-                    <FormHelperText style={{ color: "red" }}>
-                      This account already existed in your contacts
-                    </FormHelperText>
-                  )} */}
+               
                 <TextField
                   id="amount"
                   label="Amount *"
@@ -134,12 +131,12 @@ class Debts extends Component {
               </div>
               <div>
                 <TextField
-                  id="message"
+                  id="msg"
                   label="Message *"
                   fullWidth
                   margin="normal"
                   onChange={this.props.handleInputChange}
-                  name="message"
+                  name="msg"
                 />
                 <Button
                   variant="contained"
@@ -149,7 +146,7 @@ class Debts extends Component {
                     this.props.handleCreateDebt(
                       getUserInfo("f_id"),
                       account,
-                      message,
+                      msg,
                       amount,
                       reload
                     )
@@ -182,11 +179,12 @@ class Debts extends Component {
           options={options}
         />
 
-        {/* <Message
+        <Message
           variant={messageType}
+          message={message}
           open={isMessageOpen}
           onClose={this.props.closeMessage}
-        /> */}
+        />
       </React.Fragment>
     );
   }
@@ -201,12 +199,12 @@ const mapDispatchToProps = dispatch => ({
     dispatch(debtsActions.getDebtsList(customerId)),
   getDebtsListForOther: customerId =>
     dispatch(debtsActions.getDebtsListForOther(customerId)),
-  handleCreateDebt: (creditor_id, account, message, amount, reload) =>
+  handleCreateDebt: (creditor_id, account, msg, amount, reload) =>
     dispatch(
       debtsActions.handleCreateDebt(
         creditor_id,
         account,
-        message,
+        msg,
         amount,
         reload
       )

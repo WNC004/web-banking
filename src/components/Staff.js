@@ -9,7 +9,7 @@ import CreateStaff from "./CreateStaff";
 import MustBeAdmin from "./HOCs/MustBeAdmin";
 import * as messageActions from "../redux/actions/messageActions";
 import * as staffsActions from "../redux/actions/staffsActions";
-import * as customersActions from "../redux/actions/customersActions";
+import EditStaff from "./EditStaff";
 
 
 class Staffs extends Component {
@@ -18,29 +18,11 @@ class Staffs extends Component {
   };
 
   render() {
-    // const {
-    //   customers
-    // } = this.props;
-
     const {
       staffs
     } = this.props;
 
     console.log(staffs);
-
-    // const data = customers.map((customer, index) => [
-    //   index + 1,
-    //   customer.email,
-    //   customer.name,
-    //   customer.phone,
-    //   customer.createdAt,
-    //   <Button
-    //     variant="contained"
-    //     color="primary"
-    //   >
-    //     Edit
-    //   </Button>
-    // ]);
 
     const data = staffs.map((staff, index) => [
       index + 1,
@@ -76,6 +58,7 @@ class Staffs extends Component {
           columns={columns}
           options={options}
         />
+        
 
       </React.Fragment>
     );
@@ -87,7 +70,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getCustomersList: () => dispatch(customersActions.getCustomersList()),
   getStaffsList: () => dispatch(staffsActions.getStaffsList()),
   closeMessage: () => dispatch(messageActions.closeMessage())
 });

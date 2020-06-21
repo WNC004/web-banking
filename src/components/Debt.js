@@ -188,12 +188,14 @@ class Debts extends Component {
 
   handleClosePayAcc = () => {
     const {
+      customerId,
       debtId,
       reason
     } = this.state;
     axios
           .post(`http://localhost:3001/debt/delete/`, 
           {
+            customerId,
             debtId,
             reason
           },

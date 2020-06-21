@@ -35,7 +35,7 @@ class ChangePassword extends Component {
     // validate username, password
     if (newPassword === "" || newPasswordConfirm === "") return;
 
-    if (newPassword != newPasswordConfirm){
+    if (newPassword !== newPasswordConfirm){
       this.setState({
         messageType: "error",
         isMessageOpen: true,

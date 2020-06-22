@@ -16,6 +16,14 @@ export const mainListItems = (
         <ListItemText primary="Staffs" />
       </ListItem>
     </Link>
+    <Link to="/staffs">
+      <ListItem button>
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Staffs" />
+      </ListItem>
+    </Link>
   </div>
 );
 

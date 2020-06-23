@@ -37,6 +37,7 @@ class Customers extends Component {
 
     const data = customers.map((customer, index) => [
       index + 1,
+      customer.username,
       customer.email,
       customer.name,
       customer.phone,
@@ -57,7 +58,7 @@ class Customers extends Component {
       </Button>
     ]);
 
-    const columns = ["#", "Email", "Name", "Phone", "Created at", "Action"];
+    const columns = ["#", "username", "Email", "Name", "Phone", "Created at", "Action"];
 
     const options = {
       selectableRows: false,

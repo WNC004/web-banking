@@ -6,7 +6,6 @@ import Message from "./Message";
 
 export default class CreateAccount extends Component {
   state = {
-    username: "",
     password: "",
     email: "",
     name: "",
@@ -19,6 +18,7 @@ export default class CreateAccount extends Component {
 
   componentDidMount = () => {
     document.addEventListener("keyup", this.handleEnterKeyup);
+    
   };
 
   componentWillUnmount() {
@@ -40,7 +40,7 @@ export default class CreateAccount extends Component {
   };
 
   handleSignUp = () => {
-    const { username, email, name, password, phone } = this.state;
+    const { email, name, password, phone } = this.state;
     // validate email
     const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (emailRegEx.test(email) === false)
@@ -51,7 +51,6 @@ export default class CreateAccount extends Component {
       });
     // validate address, name, password, phone
     if (
-      username.trim() === "" ||
       name.trim() === "" ||
       password === "" ||
       phone === ""
@@ -66,12 +65,11 @@ export default class CreateAccount extends Component {
       .post(
         "http://localhost:3001/auth/user",
         {
-          Username: username,
           Password: password,
           Name: name,
           Phone: phone,
           Email: email,
-          Type: "1"
+          Type: "2"
         },
         {
           headers: {
@@ -143,26 +141,17 @@ export default class CreateAccount extends Component {
                 onChange={this.handleInputChange}
                 name="email"
               />
-              <TextField
-                id="signUpPhone"
-                label="Phone *"
-                fullWidth
-                margin="normal"
-                onChange={this.handleInputChange}
-                name="phone"
-                value={this.state.phone}
-              />
+              <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={this.handleSignUp}
+                >
+                  create account
+                </Button>
             </div>
             <div>
               <div>
-                <TextField
-                  id="signUpUsername"
-                  label="Username *"
-                  fullWidth
-                  margin="normal"
-                  onChange={this.handleInputChange}
-                  name="username"
-                />
                 <TextField
                   id="signUpPassword"
                   label="Password *"
@@ -172,16 +161,15 @@ export default class CreateAccount extends Component {
                   onChange={this.handleInputChange}
                   name="password"
                 />
-              </div>
-              <div>
-                <Button
-                  variant="contained"
-                  color="primary"
+                <TextField
+                  id="signUpPhone"
+                  label="Phone *"
                   fullWidth
-                  onClick={this.handleSignUp}
-                >
-                  create account
-                </Button>
+                  margin="normal"
+                  onChange={this.handleInputChange}
+                  name="phone"
+                  value={this.state.phone}
+                />
               </div>
             </div>
           </div>

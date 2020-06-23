@@ -47,7 +47,7 @@ class PayAccClient extends Component {
       });
 
     axios
-      .get(`http://localhost:3001/pay-accs/${customerId}`, {
+      .get(`http://localhost:3001/pay-accs-all/${customerId}`, {
         headers: {
           "x-access-token": getCookie("access_token")
         }
@@ -405,11 +405,12 @@ class PayAccClient extends Component {
     const MUIDataTableInfo = {
       default: {
         data: payAccs.map((payAcc, index) => {
-          const { id, accNumber, balance, createdAt, status } = payAcc;
+          const { id, accNumber, balance, createdAt, status, type } = payAcc;
           return [
             index + 1,
             accNumber,
             balance,
+            type == '1' ? 'Payment' : 'Savings',
             createdAt,
             <span style={{ color: status === "OPEN" ? "#008b00" : "#e54304" }}>
               {status}
@@ -437,7 +438,7 @@ class PayAccClient extends Component {
             </div>
           ];
         }),
-        columns: ["#", "Number", "Balance", "Created at", "Status", "Action"],
+        columns: ["#", "Number", "Balance", "Type", "Created at", "Status", "Action"],
         options: {
           selectableRows: false,
           responsive: "scroll",

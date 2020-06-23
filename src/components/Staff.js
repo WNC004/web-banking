@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import {
-  Button, Paper
+  Button, Paper, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
@@ -9,78 +9,137 @@ import CreateStaff from "./CreateStaff";
 import MustBeAdmin from "./HOCs/MustBeAdmin";
 import * as messageActions from "../redux/actions/messageActions";
 import * as staffsActions from "../redux/actions/staffsActions";
-import Modal from 'react-modal';
-import {Form, Input} from 'react';
+import { getUserInfo } from "../utils/authHelper";
+  import { getCookie } from "tiny-cookie";
+import axios from "axios";
+
 
 
 
 class Staffs extends Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {
+  state = {
         modalIsOpen: false,
+        staffId: getUserInfo("f_id"),
+        staffs: [],
+        messageType: "",
+        isMessageOpen: "",
+        message: "",
+        isDialogClosePayAccOpen: true,
     }
-}
 
   componentDidMount = () => {
     this.props.getStaffsList();
   };
 
-  handleInputChange = (event) => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    this.setState({
-      [name]: value
-    });
-  };
+  handleClosePayAcc = () => {
+    const {
+      staffId
+    } = this.state;
+    console.log("Handle Close Payacc");
+    axios
+          .post(`http://localhost:3001/staffs/delete/`, 
+          {
+            staffId,
+          },
+          {
+            headers: {
+              "x-access-token": getCookie("access_token")
+            }
+          })
+          .then(resp => {
+            const { status } = resp;
+            if (status === 200) {
+              this.setState({
+              messageType: "success",
+              isMessageOpen: false,
+              message: "You deleted this staff",
+              isDialogClosePayAccOpen: true,
+              debtId: ""
+            });
+            this.getStaffsList();
+            } else {
+              this.setState({
+                messageType: "error",
+                isMessageOpen: true,
+                message: "Failed deleted this staff",
+                isDialogClosePayAccOpen: false,
+                debtId: ""
+              });
+              throw new Error(
+                "Something went wrong when getting contacts list, status ",
+                status
+              );
+            }
+          })
+  }
 
-  componentWillMount() {
-    // Modal.setAppElement('body');
-  };
 
-  openModal() {
-    this.setState({
-        modalIsOpen: true,
-    });
-}
-
-closeModal() {
+handleCloseClosePayAccDialog = () => {
   this.setState({
-      modalIsOpen: false
+    isDialogClosePayAccOpen: false,
+    staffId: ""
   });
-}
+};
+
+onClosePayAcc = (staffId) => {
+  if (staffId === undefined)
+    return this.setState({
+      messageType: "error",
+      isMessageOpen: true,
+      message: "Sorry, could not get this payment account information"
+    });
+
+  this.setState({
+    staffId,
+    isDialogClosePayAccOpen: true
+  });
+  console.log(staffId);
+};
+
+handleCloseMessage = () => {
+  this.setState({ isMessageOpen: false, message: "" });
+};
+
+handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
 
   render() {
     const {
-      staffs
+      staffs,
+      isMessageOpen,
+      message,
+      messageType,
+      isDialogClosePayAccOpen,
     } = this.props;
 
     console.log(staffs);
 
-    const data = staffs.map((staff, index) => [
-      index + 1,
-      staff.email,
-      staff.name,
-      staff.phone,
-      staff.createdAt,
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => this.openModal()}
-      >
-        Edit
-      </Button>,
-      <Button
-        variant="contained"
-        color="primary"
-    >
-      Delete
-    </Button>
-    ]);
+    const data = staffs.map((staff, index) => {
+      const id = staff.staffId;
+      // console.log(id);
+      return [
+        index + 1,
+        staff.email,
+        staff.name,
+        staff.phone,
+        staff.createdAt,
+        <Button
+          variant="contained"
+          color="primary"
+        >
+          Edit
+        </Button>,
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => this.onClosePayAcc(id)}      
+          >
+        Delete
+      </Button>
+      ]
+    }
+      );
 
-    console.log(data.index);
 
     const columns = ["#", "Email", "Name", "Phone", "Created at", "Action","Delete"];
 
@@ -103,50 +162,37 @@ closeModal() {
           options={options}
           
         />
-        <React.Fragment>
-        <Paper className="sign-up paper form-2-cols">
-        <Modal
-          isOpen={this.state.modalIsOpen}
-          onRequestClose={this.closeModal}>
-          <button onClick={this.closeModal}>Close</button>
-          <div>Nội dung Modal</div>
-          <form>
-          <table>
-            <tbody>
-              <tr>
-                <th><label>Title</label></th>
-                <td>
-                  <input
-                    type="text"
-                    name="title"
-                    value="" />
-                </td>
-              </tr>
-
-              <tr>
-                <th><label>Description</label></th>
-                <td>
-                  <textarea
-                    name="description"
-                    value="" />
-                </td>
-              </tr>
-
-              <tr>
-                <th><label>Content</label></th>
-                <td>
-                  <textarea
-                    name="content"
-                    value="" />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button type="submit">Edit</button>
-        </form>
-        </Modal>
-        </Paper>
-        </React.Fragment>
+        <Message
+          variant={messageType}
+          message={message}
+          open={isMessageOpen}
+          onClose={this.handleCloseMessage}
+        />
+        <Dialog
+          open={isDialogClosePayAccOpen}
+          onClose={this.handleCloseClosePayAccDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {`Are you sure to deleted this debt`}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <span>The balance of new payment account is 0 by default</span>
+              <br />
+              <span>It may need paying in afterward</span>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseClosePayAccDialog} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleClosePayAcc} color="primary" autoFocus>
+              Yes, I'm sure
+            </Button>
+          </DialogActions>
+        </Dialog>
       </React.Fragment>
     );
   }

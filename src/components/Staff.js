@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import {
-  Button, Paper, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField
+  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
@@ -9,114 +9,35 @@ import CreateStaff from "./CreateStaff";
 import MustBeAdmin from "./HOCs/MustBeAdmin";
 import * as messageActions from "../redux/actions/messageActions";
 import * as staffsActions from "../redux/actions/staffsActions";
-import { getUserInfo } from "../utils/authHelper";
-  import { getCookie } from "tiny-cookie";
-import axios from "axios";
-
-
-
 
 class Staffs extends Component {
-
-  state = {
-        modalIsOpen: false,
-        staffId: getUserInfo("f_id"),
-        staffs: [],
-        messageType: "",
-        isMessageOpen: "",
-        message: "",
-        isDialogClosePayAccOpen: true,
-    }
 
   componentDidMount = () => {
     this.props.getStaffsList();
   };
 
-  handleClosePayAcc = () => {
-    const {
-      staffId
-    } = this.state;
-    console.log("Handle Close Payacc");
-    axios
-          .post(`http://localhost:3001/staffs/delete/`, 
-          {
-            staffId,
-          },
-          {
-            headers: {
-              "x-access-token": getCookie("access_token")
-            }
-          })
-          .then(resp => {
-            const { status } = resp;
-            if (status === 200) {
-              this.setState({
-              messageType: "success",
-              isMessageOpen: false,
-              message: "You deleted this staff",
-              isDialogClosePayAccOpen: true,
-              debtId: ""
-            });
-            this.getStaffsList();
-            } else {
-              this.setState({
-                messageType: "error",
-                isMessageOpen: true,
-                message: "Failed deleted this staff",
-                isDialogClosePayAccOpen: false,
-                debtId: ""
-              });
-              throw new Error(
-                "Something went wrong when getting contacts list, status ",
-                status
-              );
-            }
-          })
-  }
-
-
-handleCloseClosePayAccDialog = () => {
-  this.setState({
-    isDialogClosePayAccOpen: false,
-    staffId: ""
-  });
-};
-
-onClosePayAcc = (staffId) => {
-  if (staffId === undefined)
-    return this.setState({
-      messageType: "error",
-      isMessageOpen: true,
-      message: "Sorry, could not get this payment account information"
-    });
-
-  this.setState({
-    staffId,
-    isDialogClosePayAccOpen: true
-  });
-  console.log(staffId);
-};
-
-handleCloseMessage = () => {
-  this.setState({ isMessageOpen: false, message: "" });
-};
-
-handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
-
+  // componentDidUpdate  = () => {
+  //   this.props.getStaffsList();
+  // }
   render() {
     const {
       staffs,
       isMessageOpen,
       message,
       messageType,
-      isDialogClosePayAccOpen,
+      staffId,
+      staffEmail,
+      staffName,
+      phone,
+      isDeleteDialogOpen,
+      isEditDialogOpen
     } = this.props;
 
     console.log(staffs);
 
     const data = staffs.map((staff, index) => {
       const id = staff.staffId;
-      // console.log(id);
+      console.log(id);
       return [
         index + 1,
         staff.email,
@@ -126,13 +47,28 @@ handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
         <Button
           variant="contained"
           color="primary"
+          onClick={() =>
+            this.props.openEditConfirmDialog(
+              staff.staffId,
+              staff.email,
+              staff.name,
+              staff.phone
+            )
+          }    
         >
           Edit
         </Button>,
         <Button
           variant="contained"
           color="primary"
-          onClick={() => this.onClosePayAcc(id)}      
+          onClick={() =>
+            this.props.openDeleteConfirmDialog(
+              staff.staffId,
+              staff.email,
+              staff.name,
+              staff.phone
+            )
+          }      
           >
         Delete
       </Button>
@@ -160,7 +96,6 @@ handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
           data={data}
           columns={columns}
           options={options}
-          
         />
         <Message
           variant={messageType}
@@ -168,31 +103,85 @@ handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
           open={isMessageOpen}
           onClose={this.handleCloseMessage}
         />
+
         <Dialog
-          open={isDialogClosePayAccOpen}
-          onClose={this.handleCloseClosePayAccDialog}
+          open={isEditDialogOpen}
+          onClose={this.props.closeEditConfirmDialog}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {`Are you sure to deleted this debt`}
+            {"Edit this staff"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              <span>The balance of new payment account is 0 by default</span>
+              <span>Edit</span>
               <br />
-              <span>It may need paying in afterward</span>
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleCloseClosePayAccDialog} color="primary">
-              Cancel
+            <Button
+              onClick={this.props.closeEditConfirmDialog}
+              color="primary"
+            >
+              cancel
             </Button>
-            <Button onClick={this.handleClosePayAcc} color="primary" autoFocus>
-              Yes, I'm sure
+            <Button
+              onClick={() =>
+                this.props.handleEditDialog(
+                  staffId,
+                  staffEmail,
+                  staffName,
+                  phone
+                )
+              }
+              color="primary"
+              autoFocus
+            >
+              Edit
             </Button>
           </DialogActions>
         </Dialog>
+        
+        <Dialog
+          open={isDeleteDialogOpen}
+          onClose={this.props.closeDeleteConfirmDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Delete this staff ?"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              <span>Delete</span>
+              <br />
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={this.props.closeDeleteConfirmDialog}
+              color="primary"
+            >
+              cancel
+            </Button>
+            <Button
+              onClick={() =>
+                this.props.handleDeleteDialog(
+                  staffId,
+                  staffEmail,
+                  staffName,
+                  phone
+                )
+              }
+              color="primary"
+              autoFocus
+            >
+              delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
       </React.Fragment>
     );
   }
@@ -204,7 +193,50 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getStaffsList: () => dispatch(staffsActions.getStaffsList()),
-  closeMessage: () => dispatch(messageActions.closeMessage())
+  closeMessage: () => dispatch(messageActions.closeMessage()),
+  //Delete
+  handleDeleteDialog: (staffId, staffEmail, staffName, phone) =>
+    dispatch(
+      staffsActions.handleDeleteDialog(
+        staffId,
+        staffEmail,
+        staffName,
+        phone
+      )
+    ),
+  openDeleteConfirmDialog: (staffId, staffEmail, staffName, phone) =>
+    dispatch(
+      staffsActions.openDeleteConfirmDialog(
+        staffId,
+        staffEmail,
+        staffName,
+        phone
+      )
+    ),
+    closeDeleteConfirmDialog: () =>
+    dispatch(staffsActions.closeDeleteConfirmDialog()),
+    //Edit
+    handleEditDialog: (staffId, staffEmail, staffName, phone) =>
+    dispatch(
+      staffsActions.handleEditDialog(
+        staffId,
+        staffEmail,
+        staffName,
+        phone
+      )
+    ),
+  openEditConfirmDialog: (staffId, staffEmail, staffName, phone) =>
+    dispatch(
+      staffsActions.openEditConfirmDialog(
+        staffId,
+        staffEmail,
+        staffName,
+        phone
+      )
+    ),
+    closeEditConfirmDialog: () =>
+    dispatch(staffsActions.closeEditConfirmDialog())
+
 });
 
 export default MustBeAdmin(

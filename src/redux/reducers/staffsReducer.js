@@ -7,6 +7,15 @@ const initState = {
   isMessageOpen: false,
   messageType: "",
   message: "",
+  // for dialog edit
+  openDialog: false,
+  isDeleteDialogOpen: false,
+  staffId: "",
+  staffEmail: "",
+  staffName: "",
+  staffPhone: "",
+  // for dialog edit
+  isEditDialogOpen: false
 };
 
 const staffsReducer = (state = initState, action) => {
@@ -27,6 +36,46 @@ const staffsReducer = (state = initState, action) => {
         ...state,
         isMessageOpen: false
       };
+      // Delete
+      case staffsConstants.OPEN_DELETE_DIALOG_CONFIRM:
+        return {
+          ...state,
+          isDeleteDialogOpen: true,
+          ...action.payload
+        };
+      case staffsConstants.CLOSE_DELETE_DIALOG_CONFIRM:
+        return {
+          ...state,
+          isDeleteDialogOpen: false,
+          staffId: "",
+          staffEmail: "",
+          staffName: ""
+        };
+      case staffsConstants.HANDLE_DELETE_DIALOG_CONFIRM_SUCCEED:
+        return {
+          ...state,
+          ...action.payload
+        };
+         // Edit
+      case staffsConstants.OPEN_EDIT_DIALOG_CONFIRM:
+        return {
+          ...state,
+          isEditDialogOpen: true,
+          ...action.payload
+        };
+      case staffsConstants.CLOSE_EDIT_DIALOG_CONFIRM:
+        return {
+          ...state,
+          isEditDialogOpen: false,
+          staffId: "",
+          staffEmail: "",
+          staffName: ""
+        };
+      case staffsConstants.HANDLE_EDIT_DIALOG_CONFIRM_SUCCEED:
+        return {
+          ...state,
+          ...action.payload
+        };
     default:
       return state;
   }

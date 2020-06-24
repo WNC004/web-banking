@@ -410,7 +410,7 @@ class PayAccClient extends Component {
             index + 1,
             accNumber,
             balance,
-            type == '1' ? 'Payment' : 'Savings',
+            type === '1' ? 'Payment' : 'Savings',
             createdAt,
             <span style={{ color: status === "OPEN" ? "#008b00" : "#e54304" }}>
               {status}

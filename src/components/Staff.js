@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import {
-  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
@@ -19,6 +19,17 @@ class Staffs extends Component {
   // componentDidUpdate  = () => {
   //   this.props.getStaffsList();
   // }
+
+  handleChange = e => this.setState({ [e.target.name]: e.target.value });
+
+  // handleChange = e => {
+  //   const { name, value } = e.target;
+
+  //   this.setState({ [name]: value });
+  // };
+
+
+
   render() {
     const {
       staffs,
@@ -33,7 +44,7 @@ class Staffs extends Component {
       isEditDialogOpen
     } = this.props;
 
-    console.log(staffs);
+    // console.log(staffs);
 
     const data = staffs.map((staff, index) => {
       const id = staff.staffId;
@@ -117,6 +128,27 @@ class Staffs extends Component {
             <DialogContentText id="alert-dialog-description">
               <span>Edit</span>
               <br />
+              <input
+              type="text"
+              name="email"
+              defaultValue={this.props.staffEmail}
+              placeholder="Email"
+              onChange={this.handleChange}
+              />
+              <input
+              type="text"
+              name="name"
+              defaultValue={this.props.staffName}
+              placeholder="Name"
+              onChange={this.handleChange}
+              />
+              <input
+              type="text"
+              name="phone"
+              defaultValue={this.props.phone}
+              placeholder="Phone"
+              onChange={this.handleChange}
+              />
             </DialogContentText>
           </DialogContent>
           <DialogActions>

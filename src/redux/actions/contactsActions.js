@@ -196,3 +196,60 @@ export const handleInputChange = e => ({
 export const closeMessage = () => ({
   type: messageConstants.CLOSE_MESSAGE
 });
+
+export const onClosePayAcc = id =>({
+  type: contactsConstants.HANDLE_OPEN_DELETED,
+  payload:{
+    id: id
+  }
+});
+
+export const handleCloseDeletedDialog = () =>({
+  type: contactsConstants.HANDLE_CLOSE_DELETED
+})
+
+export const handleCloseDeleted = (id, reload) => dispatch =>
+axios
+  .post(`http://localhost:3001/contact/delete`, 
+  {
+    id
+  },
+  {
+    headers: {
+      "x-access-token": getCookie("access_token")
+    }
+  })
+  .then(resp => {
+    const { status} = resp;
+    if (status === 201) {
+      dispatch({
+        type: contactsConstants.HANDLE_CLOSE_DELETED,
+        payload: {
+          id: "",
+          reload: !reload
+        }
+      });
+    } else {
+      dispatch({
+        type: messageConstants.OPEN_MESSAGE,
+        payload: {
+          messageType: "error",
+          message: "Sorry, failed getting contacts list"
+        }
+      });
+      throw new Error(
+        "Something went wrong when getting contacts list, status ",
+        status
+      );
+    }
+  })
+  .catch(err => {
+    dispatch({
+      type: messageConstants.OPEN_MESSAGE,
+      payload: {
+        messageType: "error",
+        message: "Sorry, failed getting contacts list"
+      }
+    });
+    console.log(err);
+  });

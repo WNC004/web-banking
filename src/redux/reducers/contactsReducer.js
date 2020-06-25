@@ -8,6 +8,9 @@ const initState = {
   message: "",
   toAccNumber: "",
   toNickName: "",
+  isDialogDeletedOpen: false,
+  isDialogEditOpen: false,
+  id: "",
   reload: false
 };
 
@@ -21,6 +24,16 @@ const contactsReducer = (state = initState, action) => {
       return { ...state, [action.payload.name]: action.payload.value };
     case messageConstants.CLOSE_MESSAGE:
       return { ...state, isMessageOpen: false };
+    case contactsConstants.HANDLE_OPEN_DELETED:
+      return { ...state, isDialogDeletedOpen: true, ...action.payload };
+    case contactsConstants.HANDLE_CLOSE_DELETED:
+      return { ...state, isDialogDeletedOpen: false, id:"", ...action.payload };
+    case contactsConstants.HANDLE_OPEN_EDIT:
+      return { ...state, isDialogEditOpen: true, ...action.payload };
+    case contactsConstants.HANDLE_CLOSE_EDIT:
+      return { ...state, isDialogEditOpen: false, ...action.payload };
+    case messageConstants.OPEN_MESSAGE:
+       return { ...state, isMessageOpen: true };
     default:
       return state;
   }

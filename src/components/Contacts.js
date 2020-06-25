@@ -6,7 +6,11 @@ import {
   Paper,
   Typography,
   TextField,
-  FormHelperText
+  FormHelperText,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
@@ -36,19 +40,21 @@ class Contacts extends Component {
       message,
       toAccNumber,
       toNickName,
-      reload
+      reload,
+      isDialogDeletedOpen,
+      isDialogEditOpen,
+      id
     } = this.props;
 
-
-    console.log(messageType);
-
     const data = contacts.map((contact, index) => {
-      const { toAccNumber, toNickName, createdAt } = contact;
+      const { id, toAccNumber, toNickName, createdAt } = contact;
+      console.log(id);
       return [
         index + 1,
         toAccNumber,
         toNickName,
         createdAt,
+        <div>
         <Button variant="contained" color="primary">
           <Link
             to={{
@@ -60,6 +66,10 @@ class Contacts extends Component {
             TRANSFER
           </Link>
         </Button>
+        <Button variant="contained" color="secondary" onClick={() => this.props.onClosePayAcc(id)}>
+          Delete
+        </Button>
+        </div>
       ];
     });
 
@@ -152,6 +162,30 @@ class Contacts extends Component {
           options={options}
         />
 
+        <Dialog
+          open={isDialogDeletedOpen}
+          onClose={this.props.handleCloseCloseDeletedDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {`Are you sure to deleted this contact`}
+          </DialogTitle>
+          <DialogContent
+            style={{ width: "600px", height: "auto", maxHeight: "1000px" }}
+          >
+           
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={()=> this.props.handleCloseDeletedDialog()} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={()=> this.props.handleCloseDeleted(id)} color="primary" autoFocus>
+              Yes, I'm sure
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Message
           variant={messageType}
           message={message}
@@ -180,7 +214,10 @@ const mapDispatchToProps = dispatch => ({
       )
     ),
   handleInputChange: e => dispatch(contactsActions.handleInputChange(e)),
-  closeMessage: () => dispatch(messageActions.closeMessage())
+  closeMessage: () => dispatch(messageActions.closeMessage()),
+  handleCloseDeletedDialog: id => dispatch(contactsActions.handleCloseDeletedDialog(id)),
+  onClosePayAcc: id => dispatch(contactsActions.onClosePayAcc(id)),
+  handleCloseDeleted: (id,reload) => dispatch(contactsActions.handleCloseDeleted(id,reload))
 });
 
 export default MustBeCustomer(

@@ -78,3 +78,60 @@ export const handlePayInSucceed = amount => ({
     currentBalance: +amount
   }
 });
+
+export const handleViewHistory = (payAccId, accNumber) => {
+  if (payAccId === undefined || accNumber === undefined)
+    return this.setState({
+      messageType: "error",
+      isMessageOpen: true,
+      message: "Sorry, failed getting this payment account information"
+    });
+
+  axios
+    .get(`http://localhost:3001/histories/${payAccId}`, {
+      headers: {
+        "x-access-token": getCookie("access_token")
+      }
+    })
+    .then(resp => {
+      const { status, data: histories } = resp;
+      if (status === 200) {
+        this.setState({
+          histories,
+          isDialogHistoryPayAccOpen: true,
+          accNumber
+        });
+      } else {
+        this.setState({
+          messageType: "error",
+          isMessageOpen: true,
+          message: `Sorry, failed getting history of payment account ${accNumber}`
+        });
+        throw new Error(
+          "Something went wrong getting history of payment account, status ",
+          status
+        );
+      }
+    })
+    .catch(err => {
+      this.setState({
+        messageType: "error",
+        isMessageOpen: true,
+        message: `Sorry, failed getting history of payment account ${accNumber}`
+      });
+      console.log(err);
+    });
+};
+
+export const handleCloseHistoryPayAccDialog = () => {
+  this.setState({
+    isDialogHistoryPayAccOpen: false,
+    payAccId: "",
+    accNumber: "",
+    currentBalance: 0
+  });
+};
+
+export const handleCloseMessage = () => {
+  this.setState({ isMessageOpen: false, message: "" });
+};

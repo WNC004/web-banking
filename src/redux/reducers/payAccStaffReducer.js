@@ -3,6 +3,7 @@ import * as messageConstants from "../constants/messageConstants";
 
 const initState = {
   payAccs: [],
+  histories: [],
   // pay in panel
   payAccId: "",
   accNumber: "",
@@ -14,7 +15,9 @@ const initState = {
   messageType: "",
   message: "",
   // toggle pay in panel
-  togglePayInPanel: false
+  togglePayInPanel: false,
+   // for dialog viewing payment account history
+  isDialogHistoryPayAccOpen: false
 };
 
 const payAccStaffReducer = (state = initState, action) => {

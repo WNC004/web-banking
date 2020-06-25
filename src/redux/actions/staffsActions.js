@@ -78,7 +78,6 @@ export const getStaffsList = () => dispatch =>
                 staffName: "",
               }
             });
-          this.getStaffsList();
           } else {
             dispatch({
               type: staffsConstants.HANDLE_DELETE_DIALOG_CONFIRM_ERROR,
@@ -168,7 +167,6 @@ export const getStaffsList = () => dispatch =>
                 staffName: "",
               }
             });
-          this.getStaffsList();
           } else {
             dispatch({
               type: staffsConstants.HANDLE_EDIT_DIALOG_CONFIRM_ERROR,
@@ -178,11 +176,11 @@ export const getStaffsList = () => dispatch =>
                 staffEmail: "",
                 staffName: "",
                 messageType: "error",
-                message: "Failed delete staff"
+                message: "Failed edit staff"
               }
             });
             throw new Error(
-              "Something went wrong when delete staff, status ",
+              "Something went wrong when edit staff, status ",
               status
             );
           }
@@ -196,7 +194,7 @@ export const getStaffsList = () => dispatch =>
               staffEmail: "",
               staffName: "",
               messageType: "error",
-              message: "Failed delete staff"
+              message: "Failed edit staff"
             }
           });
           console.log(err);

@@ -15,7 +15,8 @@ const initState = {
   staffName: "",
   staffPhone: "",
   // for dialog edit
-  isEditDialogOpen: false
+  isEditDialogOpen: false,
+  name: ""
 };
 
 const staffsReducer = (state = initState, action) => {

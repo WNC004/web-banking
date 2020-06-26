@@ -43,6 +43,8 @@ class Contacts extends Component {
       reload,
       isDialogDeletedOpen,
       isDialogEditOpen,
+      payAccEdit,
+      nickNameEdit,
       id
     } = this.props;
 
@@ -69,6 +71,11 @@ class Contacts extends Component {
         <Button variant="contained" color="secondary" onClick={() => this.props.onClosePayAcc(id)}>
           Delete
         </Button>
+
+        <Button variant="contained" color="primary" onClick={() => this.props.onEdit(id, toAccNumber, toNickName)}>
+          Edit
+        </Button>
+
         </div>
       ];
     });
@@ -186,6 +193,53 @@ class Contacts extends Component {
           </DialogActions>
         </Dialog>
 
+        <Dialog
+          open={isDialogEditOpen}
+          onClose={this.props.handleCloseClosePayAccDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {`Forgot Password`}
+          </DialogTitle>
+          <DialogContent
+            style={{ width: "600px", height: "auto", maxHeight: "1000px" }}
+          >
+           
+              <React.Fragment>
+              <TextField
+                  id="payAccEdit"
+                  label="Payment account number"
+                  autoFocus
+                  fullWidth
+                  margin="normal"
+                  onChange={this.props.handleInputChange}
+                  name="payAccEdit"
+                  value={payAccEdit}
+                />
+                <TextField
+                  id="nickNameEdit"
+                  label="Nickname"
+                  autoFocus
+                  fullWidth
+                  margin="normal"
+                  onChange={this.props.handleInputChange}
+                  name="nickNameEdit"
+                  value={nickNameEdit}
+                />
+              </React.Fragment>
+            
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={()=> this.props.handleCloseEditDialog()} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={()=> this.props.handleCloseEdit(id, payAccEdit, nickNameEdit)} color="primary" autoFocus>
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Message
           variant={messageType}
           message={message}
@@ -217,7 +271,10 @@ const mapDispatchToProps = dispatch => ({
   closeMessage: () => dispatch(messageActions.closeMessage()),
   handleCloseDeletedDialog: id => dispatch(contactsActions.handleCloseDeletedDialog(id)),
   onClosePayAcc: id => dispatch(contactsActions.onClosePayAcc(id)),
-  handleCloseDeleted: (id,reload) => dispatch(contactsActions.handleCloseDeleted(id,reload))
+  handleCloseDeleted: (id,reload) => dispatch(contactsActions.handleCloseDeleted(id,reload)),
+  onEdit: (id, toAccNumber, toNickName) => dispatch(contactsActions.onEdit(id, toAccNumber, toNickName)),
+  handleCloseEditDialog: id => dispatch(contactsActions.handleCloseEditDialog(id)),
+  handleCloseEdit: (id, payAccEdit, nickNameEdit, reload) => dispatch(contactsActions.handleCloseEdit(id, payAccEdit, nickNameEdit, reload))
 });
 
 export default MustBeCustomer(

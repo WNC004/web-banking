@@ -253,3 +253,72 @@ axios
     });
     console.log(err);
   });
+
+export const onEdit = (id, toAccNumber, toNickName) =>({
+  type: contactsConstants.HANDLE_OPEN_EDIT,
+  payload:{
+    id: id,
+    isDialogEditOpen: true,
+    payAccEdit: toAccNumber,
+    nickNameEdit: toNickName
+  }
+})
+
+export const handleCloseEditDialog = () => ({
+  type: contactsConstants.HANDLE_CLOSE_EDIT,
+  payload:{
+    id: "",
+    isDialogEditOpen: false,
+    payAccEdit: "",
+    nickNameEdit: ""
+  }
+})
+export const handleCloseEdit = (id, payAccEdit, nickNameEdit, reload) => dispatch =>
+axios
+  .post(`http://localhost:3001/contact/update`, 
+  {
+    id, 
+    payAccEdit, 
+    nickNameEdit
+  },
+  {
+    headers: {
+      "x-access-token": getCookie("access_token")
+    }
+  })
+  .then(resp => {
+    const { status} = resp;
+    if (status === 201) {
+      dispatch({
+        type: contactsConstants.HANDLE_CLOSE_EDIT,
+        payload: {
+          id: "",
+          payAccEdit:"", 
+          nickNameEdit:"",
+          reload: !reload
+        }
+      });
+    } else {
+      dispatch({
+        type: messageConstants.OPEN_MESSAGE,
+        payload: {
+          messageType: "error",
+          message: "Sorry, failed getting contacts list"
+        }
+      });
+      throw new Error(
+        "Something went wrong when getting contacts list, status ",
+        status
+      );
+    }
+  })
+  .catch(err => {
+    dispatch({
+      type: messageConstants.OPEN_MESSAGE,
+      payload: {
+        messageType: "error",
+        message: "Sorry, failed getting contacts list"
+      }
+    });
+    console.log(err);
+  });

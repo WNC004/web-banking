@@ -11,6 +11,8 @@ const initState = {
   isDialogDeletedOpen: false,
   isDialogEditOpen: false,
   id: "",
+  payAccEdit: "",
+  nickNameEdit: "",
   reload: false
 };
 
@@ -32,6 +34,8 @@ const contactsReducer = (state = initState, action) => {
       return { ...state, isDialogEditOpen: true, ...action.payload };
     case contactsConstants.HANDLE_CLOSE_EDIT:
       return { ...state, isDialogEditOpen: false, ...action.payload };
+    case contactsConstants.GET_INFORMATION:
+      return { ...state, ...action.payload };
     case messageConstants.OPEN_MESSAGE:
        return { ...state, isMessageOpen: true };
     default:

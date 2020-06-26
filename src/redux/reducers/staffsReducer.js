@@ -16,7 +16,8 @@ const initState = {
   staffPhone: "",
   // for dialog edit
   isEditDialogOpen: false,
-  name: ""
+  name: "",
+  reload: false
 };
 
 const staffsReducer = (state = initState, action) => {
@@ -77,6 +78,8 @@ const staffsReducer = (state = initState, action) => {
           ...state,
           ...action.payload
         };
+      case staffsConstants.HANDLE_INPUT_CHANGE:
+        return { ...state, [action.payload.name]: action.payload.value };
     default:
       return state;
   }

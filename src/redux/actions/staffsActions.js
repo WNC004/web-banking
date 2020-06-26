@@ -135,7 +135,8 @@ export const getStaffsList = () => dispatch =>
       staffId,
       staffEmail,
       staffName,
-      phone
+      phone, 
+      reload
     ) => dispatch =>
       axios
         .post(
@@ -154,8 +155,7 @@ export const getStaffsList = () => dispatch =>
         )
         .then(resp => {
           const {
-            status,
-            // data: { accNumber }
+            status
           } = resp;
           if (status === 201) {
             dispatch({
@@ -165,6 +165,7 @@ export const getStaffsList = () => dispatch =>
                 staffId: "",
                 staffEmail: "",
                 staffName: "",
+                reload: !reload
               }
             });
           } else {
@@ -215,8 +216,16 @@ export const getStaffsList = () => dispatch =>
       }
     });
     
-    export const closeEditConfirmDialog = () => ({
-      type: staffsConstants.CLOSE_EDIT_DIALOG_CONFIRM
-    });
+export const closeEditConfirmDialog = () => ({
+  type: staffsConstants.CLOSE_EDIT_DIALOG_CONFIRM
+});
+
+export const handleInputChange = e => ({
+  type: staffsConstants.HANDLE_INPUT_CHANGE,
+  payload: {
+    name: e.target.name,
+    value: e.target.value
+  }
+});
     
   

@@ -226,7 +226,10 @@ axios
         type: contactsConstants.HANDLE_CLOSE_DELETED,
         payload: {
           id: "",
-          reload: !reload
+          reload: !reload,
+          messageType: "success",
+          isMessageOpen: true,
+          message: "Successfully deleted contact"
         }
       });
     } else {
@@ -295,7 +298,10 @@ axios
           id: "",
           payAccEdit:"", 
           nickNameEdit:"",
-          reload: !reload
+          reload: !reload,
+          messageType: "success",
+          isMessageOpen: true,
+          message: "Successfully edit contact"
         }
       });
     } else {

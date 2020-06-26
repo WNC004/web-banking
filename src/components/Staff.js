@@ -16,6 +16,12 @@ class Staffs extends Component {
     this.props.getStaffsList();
   };
 
+  componentDidUpdate = (prevProps, prevState) => {
+    if (prevProps.reload !== this.props.reload) {
+      this.props.getStaffsList();
+    }
+  };
+
   // componentDidUpdate  = () => {
   //   this.props.getStaffsList();
   // }
@@ -130,24 +136,24 @@ class Staffs extends Component {
               <br />
               <input
               type="text"
-              name="email"
+              name="staffEmail"
               defaultValue={this.props.staffEmail}
               placeholder="Email"
-              onChange={this.handleChange}
+              onChange={this.props.handleInputChange}
               />
               <input
               type="text"
-              name="name"
+              name="staffName"
               defaultValue={this.props.staffName}
               placeholder="Name"
-              onChange={this.handleChange}
+              onChange={this.props.handleInputChange}
               />
               <input
               type="text"
               name="phone"
               defaultValue={this.props.phone}
               placeholder="Phone"
-              onChange={this.handleChange}
+              onChange={this.props.handleInputChange}
               />
             </DialogContentText>
           </DialogContent>
@@ -247,6 +253,7 @@ const mapDispatchToProps = dispatch => ({
     ),
     closeDeleteConfirmDialog: () =>
     dispatch(staffsActions.closeDeleteConfirmDialog()),
+    handleInputChange: e => dispatch(staffsActions.handleInputChange(e)),
     //Edit
     handleEditDialog: (staffId, staffEmail, staffName, phone) =>
     dispatch(
@@ -257,13 +264,14 @@ const mapDispatchToProps = dispatch => ({
         phone
       )
     ),
-  openEditConfirmDialog: (staffId, staffEmail, staffName, phone) =>
+  openEditConfirmDialog: (staffId, staffEmail, staffName, phone, reload) =>
     dispatch(
       staffsActions.openEditConfirmDialog(
         staffId,
         staffEmail,
         staffName,
-        phone
+        phone,
+        reload
       )
     ),
     closeEditConfirmDialog: () =>

@@ -8,6 +8,7 @@ import Contacts from "./Contacts";
 import ChangePassword from "./ChangePassword";
 import Debt from "./Debt";
 import Staffs from "./Staff";
+import  Reports from "./Report";
 
 
 export class CustomersContainer extends Component {
@@ -73,6 +74,14 @@ export class StaffsContainer extends Component {
   render() {
     return (
     <Dashboard screen={<Staffs {...this.props} />} title="Staffs" />
+    );
+  }
+}
+
+export class ReportsContainer extends Component {
+  render() {
+    return (
+    <Dashboard screen={<Reports {...this.props} />} title="Staffs" />
     );
   }
 }

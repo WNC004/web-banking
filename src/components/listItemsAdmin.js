@@ -16,7 +16,16 @@ export const mainListItems = (
         <ListItemText primary="Staffs" />
       </ListItem>
     </Link>
-  </div>
+  
+  <Link to="/report">
+    <ListItem button>
+      <ListItemIcon>
+        <PeopleIcon />
+      </ListItemIcon>
+      <ListItemText primary="Report" />
+    </ListItem>
+  </Link>
+</div>
 );
 
 export const secondaryListItems = (

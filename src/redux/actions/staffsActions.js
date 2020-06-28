@@ -165,6 +165,9 @@ export const getStaffsList = () => dispatch =>
                 staffId: "",
                 staffEmail: "",
                 staffName: "",
+                isMessageOpen: true,
+                messageType: "success",
+                message: "Successful edit staff",
                 reload: !reload
               }
             });
@@ -176,6 +179,7 @@ export const getStaffsList = () => dispatch =>
                 staffId: "",
                 staffEmail: "",
                 staffName: "",
+                isMessageOpen: true,
                 messageType: "error",
                 message: "Failed edit staff"
               }
@@ -194,6 +198,7 @@ export const getStaffsList = () => dispatch =>
               staffId: "",
               staffEmail: "",
               staffName: "",
+              isMessageOpen: true,
               messageType: "error",
               message: "Failed edit staff"
             }

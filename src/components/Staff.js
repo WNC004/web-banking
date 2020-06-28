@@ -46,6 +46,7 @@ class Staffs extends Component {
       staffEmail,
       staffName,
       phone,
+      reload,
       isDeleteDialogOpen,
       isEditDialogOpen
     } = this.props;
@@ -118,7 +119,7 @@ class Staffs extends Component {
           variant={messageType}
           message={message}
           open={isMessageOpen}
-          onClose={this.handleCloseMessage}
+          onClose={this.props.closeMessage}
         />
 
         <Dialog
@@ -170,7 +171,8 @@ class Staffs extends Component {
                   staffId,
                   staffEmail,
                   staffName,
-                  phone
+                  phone,
+                  reload
                 )
               }
               color="primary"
@@ -254,14 +256,16 @@ const mapDispatchToProps = dispatch => ({
     closeDeleteConfirmDialog: () =>
     dispatch(staffsActions.closeDeleteConfirmDialog()),
     handleInputChange: e => dispatch(staffsActions.handleInputChange(e)),
+    closeMessage: () => dispatch(messageActions.closeMessage()),
     //Edit
-    handleEditDialog: (staffId, staffEmail, staffName, phone) =>
+    handleEditDialog: (staffId, staffEmail, staffName, phone, reload) =>
     dispatch(
       staffsActions.handleEditDialog(
         staffId,
         staffEmail,
         staffName,
-        phone
+        phone,
+        reload
       )
     ),
   openEditConfirmDialog: (staffId, staffEmail, staffName, phone, reload) =>

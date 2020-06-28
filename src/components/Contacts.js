@@ -234,7 +234,7 @@ class Contacts extends Component {
             <Button onClick={()=> this.props.handleCloseEditDialog()} color="primary">
               Cancel
             </Button>
-            <Button onClick={()=> this.props.handleCloseEdit(id, payAccEdit, nickNameEdit)} color="primary" autoFocus>
+            <Button onClick={()=> this.props.handleCloseEdit(id, payAccEdit, nickNameEdit, reload)} color="primary" autoFocus>
               Save
             </Button>
           </DialogActions>

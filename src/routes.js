@@ -12,7 +12,8 @@ import {
   ChangePasswordContainer,
   DebtContainer,
   StaffsContainer,
-  ReportsContainer
+  ReportsContainer,
+  ExternalTransferContainer
 } from "./components/DashContainer";
 
 const routes = [
@@ -63,6 +64,12 @@ const routes = [
     isPrivate: true,
     exact: true,
     comp: props => <InternalTransferContainer {...props} />
+  },
+  {
+    path: "/external-transfers",
+    isPrivate: true,
+    exact: true,
+    comp: props => <ExternalTransferContainer {...props} />
   },
   {
     path: "/contacts",

@@ -26,6 +26,14 @@ export const mainListItems = (
         <ListItemText primary="Internal transfers" />
       </ListItem>
     </Link>
+    <Link to="/external-transfers">
+      <ListItem button>
+        <ListItemIcon>
+          <ContactsIcon />
+        </ListItemIcon>
+        <ListItemText primary="External transfers" />
+      </ListItem>
+    </Link>
     <Link to="/contacts">
       <ListItem button>
         <ListItemIcon>

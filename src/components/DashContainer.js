@@ -9,6 +9,7 @@ import ChangePassword from "./ChangePassword";
 import Debt from "./Debt";
 import Staffs from "./Staff";
 import  Reports from "./Report";
+import ExternalTransfer from "./ExternalTransfer";
 
 
 export class CustomersContainer extends Component {
@@ -25,6 +26,17 @@ export class InternalTransferContainer extends Component {
       <Dashboard
         screen={<InternalTransfer {...this.props} />}
         title="Internal Transfer"
+      />
+    );
+  }
+}
+
+export class ExternalTransferContainer extends Component {
+  render() {
+    return (
+      <Dashboard
+        screen={<ExternalTransfer {...this.props} />}
+        title="External Transfer"
       />
     );
   }

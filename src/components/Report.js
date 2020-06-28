@@ -1,12 +1,10 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import {
-  Button, Typography,Paper,TextField, Grid
+  Button, Typography,Paper,TextField, Grid, Select, MenuItem, FormControl, InputLabel
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
 import MustBeAdmin from "./HOCs/MustBeAdmin";
-import { getUserInfo } from "../utils/authHelper";
 import axios from "axios";
 import { getCookie } from "tiny-cookie";
 
@@ -20,7 +18,8 @@ class Reports extends Component {
     from:"",
     to:"",
     totalAmount: 0,
-    hisrories: []
+    hisrories: [],
+    banks: []
   };
 
   getTotalAmount = () =>{
@@ -103,6 +102,41 @@ class Reports extends Component {
       });
   }
 
+  getListBanks = () =>{
+    axios
+      .post("http://localhost:3001/histories/banks",
+      {},
+      {
+        headers: {
+          "x-access-token": getCookie("access_token")
+        }
+      })
+      .then(resp => {
+        const { status, data: list } = resp;
+        if (status === 200) {
+           this.setState({
+            messageType: "success",
+            banks: list
+          });
+        } else {
+          this.setState({
+            messageType: "error",
+            message: "Failed get list banks"
+          });
+          throw new Error(
+            "Something went wrong when getting contacts list, status ",
+            status
+          );
+        }
+      })
+      .catch(err => {
+        this.setState({
+          messageType: "error",
+          message: "Failed get list banks"
+        });
+      });
+  }
+
   handleInputChange = e => this.setState({ [e.target.name]: e.target.value });
 
   filter = () => {
@@ -113,6 +147,7 @@ class Reports extends Component {
   componentDidMount = () => {
     this.getTotalAmount();
     this.getList();
+    this.getListBanks();
   };
 
   render() {
@@ -124,7 +159,8 @@ class Reports extends Component {
       from,
       to,
       totalAmount,
-      hisrories
+      hisrories,
+      banks
     } = this.state;
 
     // console.log(staffs);
@@ -163,37 +199,61 @@ class Reports extends Component {
             </Typography>
         <Grid container>
           <Grid item xs={3}>
-            <TextField
-                  id="bankName"
-                  label="Bank Name"
-                  autoFocus
-                  fullWidth
-                  margin="normal"
-                  onChange={this.handleInputChange}
-                  name="bankName"
-                />
+          <FormControl fullWidth>
+                    <InputLabel htmlFor="payAccId">
+                      Bank Name
+                    </InputLabel>
+          <Select
+                      value={bankName}
+                      onChange={this.handleInputChange}
+                      inputProps={{
+                        name: "bankName",
+                        id: "bankName"
+                      }}
+                      autoFocus
+                    >
+                      {banks.map((bank, index) => (
+                        <MenuItem key={index} value={bank.id}>
+                          {bank.bank_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+            
           </Grid>
           <Grid item xs={3}>
+          <FormControl fullWidth>
+                    <InputLabel htmlFor="payAccId">
+                      
+                    </InputLabel>
           <TextField item xs={3}
             type="date"
                   id="from"
-                  label="From"
+                  placeholder="From"
                   fullWidth
                   margin="normal"
                   onChange={this.handleInputChange}
                   name="from"
+                  value={from}
                 />
+              </FormControl>
           </Grid>
           <Grid item xs={3}>
+          <FormControl fullWidth>
+                    <InputLabel htmlFor="payAccId">
+                      
+                    </InputLabel>
           <TextField
            type="date"
                   id="to"
-                  label="To"
+                  placeholder="To"
                   fullWidth
                   margin="normal"
                   onChange={this.handleInputChange}
                   name="to"
+                  value={to}
                 />
+                </FormControl>
           </Grid>
           <Grid item xs={3} mb={0} pd={0}>
           <Button
@@ -209,7 +269,7 @@ class Reports extends Component {
         </Paper> 
         <Paper className="sign-up paper form-2-cols">
           <Typography variant="title" component="h1">
-            Total amount: {totalAmount.toLocaleString('vi', {style : 'currency', currency : 'VND'})}
+            Total amount: {totalAmount=== null ?"0 đ":totalAmount.toLocaleString('vi', {style : 'currency', currency : 'VND'})}
           </Typography>
         </Paper>
         <MUIDataTable

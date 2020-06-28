@@ -508,7 +508,15 @@ class PayAccClient extends Component {
             index + 1,
             transactionType === "sent" ? toAccNumber : fromAccNumber,
             amount,
-            transactionType.toUpperCase(),
+            // transactionType.toUpperCase(),
+            // <span style={{ color: transactionType === "sent" ? "#ff0000" : "#66ff99" }}>
+            //   {history.transactionType.toUpperCase()}
+            // </span>,
+            <span style={{ 
+              color: transactionType === "sent" ? "#66ff99" :  transactionType === "received" ? "#ff9933" : "#ff0066"
+            }}>
+              {history.transactionType.toUpperCase()}
+            </span>,
             +feeType,
             msg,
             createdAt
@@ -531,7 +539,7 @@ class PayAccClient extends Component {
           viewColumns: false,
           filter: false,
           rowsPerPage: 5,
-          rowsPerPageOptions: [5, 10]
+          rowsPerPageOptions: [5, 10],
         }
       }
     };

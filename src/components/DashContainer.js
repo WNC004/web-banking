@@ -10,6 +10,7 @@ import Debt from "./Debt";
 import Staffs from "./Staff";
 import  Reports from "./Report";
 import ExternalTransfer from "./ExternalTransfer";
+import HistoryStaff from "./HistoryStaff";
 
 
 export class CustomersContainer extends Component {
@@ -59,6 +60,17 @@ export class PayAccStaffContainer extends Component {
       <Dashboard
         screen={<PayAccStaff {...this.props} />}
         title="Payment Accounts"
+      />
+    );
+  }
+}
+
+export class HistoryStaffContainer extends Component {
+  render() {
+    return (
+      <Dashboard
+        screen={<HistoryStaff {...this.props} />}
+        title="History Staff"
       />
     );
   }

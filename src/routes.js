@@ -13,7 +13,8 @@ import {
   DebtContainer,
   StaffsContainer,
   ReportsContainer,
-  ExternalTransferContainer
+  ExternalTransferContainer,
+  HistoryStaffContainer
 } from "./components/DashContainer";
 
 const routes = [
@@ -88,6 +89,12 @@ const routes = [
     isPrivate: true,
     exact: true,
     comp: props => <DebtContainer {...props} />
+  },
+  {
+    path: "/history-staff",
+    isPrivate: true,
+    exact: true,
+    comp: props => <HistoryStaffContainer {...props} />
   },
   {
     path: "/report",

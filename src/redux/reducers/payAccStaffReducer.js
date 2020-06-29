@@ -29,6 +29,16 @@ const payAccStaffReducer = (state = initState, action) => {
         ...state,
         ...action.payload
       };
+    case payAccStaffConstants.OPEN_HISTORY_DIALOG:
+        return {
+          ...state,
+          ...action.payload
+        };
+        case payAccStaffConstants.OPEN_VIEW_HISTORY_DIALOG: 
+        return {
+          ...state,
+          ...action.payload
+        };
     case payAccStaffConstants.CLOSE_PAY_IN_PANEL:
       return {
         ...state,
@@ -50,6 +60,7 @@ const payAccStaffReducer = (state = initState, action) => {
         ...state,
         isMessageOpen: false
       };
+    
     default:
       return state;
   }

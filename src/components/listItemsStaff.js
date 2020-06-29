@@ -25,6 +25,14 @@ export const mainListItems = (
         <ListItemText primary="Payment accounts" />
       </ListItem>
     </Link>
+    <Link to="/history-staff">
+      <ListItem button>
+        <ListItemIcon>
+          <BarChartIcon />
+        </ListItemIcon>
+        <ListItemText primary="History" />
+      </ListItem>
+    </Link>
   </div>
 );
 

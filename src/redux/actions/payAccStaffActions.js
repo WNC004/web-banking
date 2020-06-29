@@ -72,6 +72,24 @@ export const closePayInPanel = () => ({
   }
 });
 
+export const openHistoryDialog = (
+  payAccId,
+  accNumber,
+  clientName,
+  clientEmail,
+  currentBalance
+) => ({
+  type: payAccStaffConstants.OPEN_HISTORY_DIALOG,
+  payload: {
+    payAccId,
+    accNumber,
+    clientName,
+    clientEmail,
+    currentBalance,
+    togglePayInPanel: true
+  }
+});
+
 export const handlePayInSucceed = amount => ({
   type: payAccStaffConstants.HANDLE_PAY_IN_SUCCEED,
   payload: {
@@ -105,7 +123,9 @@ export const handleViewHistory = (payAccId, accNumber) => {
         this.setState({
           messageType: "error",
           isMessageOpen: true,
-          message: `Sorry, failed getting history of payment account ${accNumber}`
+          message: `Sorry, failed getting history of payment account ${accNumber}`,
+          payAccId: "",
+          accNumber: "",
         });
         throw new Error(
           "Something went wrong getting history of payment account, status ",
@@ -117,7 +137,9 @@ export const handleViewHistory = (payAccId, accNumber) => {
       this.setState({
         messageType: "error",
         isMessageOpen: true,
-        message: `Sorry, failed getting history of payment account ${accNumber}`
+        message: `Sorry, failed getting history of payment account ${accNumber}`,
+        payAccId: "",
+        accNumber: "",
       });
       console.log(err);
     });

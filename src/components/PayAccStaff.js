@@ -10,6 +10,8 @@ import Message from "./Message";
 import MustBeStaff from "./HOCs/MustBeStaff";
 import * as payAccStaffActions from "../redux/actions/payAccStaffActions";
 import * as messageActions from "../redux/actions/messageActions";
+import axios from "axios";
+import { getCookie } from "tiny-cookie";
 
 class PayAccStaff extends Component {
   componentDidMount = () => {
@@ -70,8 +72,8 @@ class PayAccStaff extends Component {
         variant="contained"
         color="primary"
         onClick={() =>
-          this.props.handleViewHistory(
-            payAcc.id,
+          this.props.openHistoryDialog(
+            payAcc.payAccId,
             payAcc.accNumber,
             payAcc.clientName,
             payAcc.clientEmail,
@@ -190,7 +192,12 @@ const mapDispatchToProps = dispatch => ({
     )
   ),
   handleCloseHistoryPayAccDialog: () => dispatch(payAccStaffActions.handleCloseHistoryPayAccDialog()),
-
+  openHistoryDialog: (payAccId, accNumber) => dispatch(
+    payAccStaffActions.openHistoryDialog(
+      payAccId,
+      accNumber
+    )
+  )
 
 
 });

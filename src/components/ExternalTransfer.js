@@ -152,13 +152,12 @@ class ExternalTransfer extends Component {
     console.log(receiverPayAccNumber);
     const ts = moment().unix();
     var data = ts + JSON.stringify({card_number: receiverPayAccNumber})
-    const card_number_0 = 5678900008;
-    var sign = "";
+    // const card_number_0 = 5678900008;
 
     if(transferBank === "Truong Bank")
     {
-      sign = cryptoJS.HmacSHA256(data, "secretKey").toString();
-      console.log(sign);
+      var signRSA = cryptoJS.HmacSHA256(data, "secretKey").toString();
+      console.log(signRSA);
     }
     else 
     {
@@ -190,7 +189,7 @@ class ExternalTransfer extends Component {
             // "x-access-token": getCookie("access_token")
             'ts': ts,
             'partner_code': 2,
-            'sign': sign
+            'sign': signRSA
           },
           data: {card_number: receiverPayAccNumber}
         }),
@@ -511,7 +510,6 @@ class ExternalTransfer extends Component {
       payAccs,
       payAccsTransferable,
       payAccId,
-      bankName,
       accNumber,
       currentBalance,
       transferAmount,

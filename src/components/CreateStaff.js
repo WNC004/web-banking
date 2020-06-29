@@ -64,7 +64,7 @@ export default class CreateStaff extends Component {
 
     axios
       .post(
-        "http://localhost:3001/auth/user",
+        "http://localhost:3001/auth/staff",
         {
           Username: username,
           Password: password,

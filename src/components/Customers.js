@@ -16,7 +16,7 @@ import * as customersActions from "../redux/actions/customersActions";
 import * as messageActions from "../redux/actions/messageActions";
 
 class Customers extends Component {
-  componentDidMount = () => {
+  componentDidMount = () => { 
     this.props.getCustomersList();
   };
 
@@ -54,7 +54,7 @@ class Customers extends Component {
           )
         }
       >
-        create payment account
+        create saving account
       </Button>
     ]);
 
@@ -88,11 +88,11 @@ class Customers extends Component {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            {"Create new payment account for this customer?"}
+            {"Create new saving account for this customer?"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              <span>The balance of new payment account is 0 by default</span>
+              <span>The balance of new saving account is 0 by default</span>
               <br />
               <span>It may need paying in afterward</span>
             </DialogContentText>

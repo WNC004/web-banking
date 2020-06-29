@@ -50,7 +50,7 @@ export const handleCreatePayAcc = (
 ) => dispatch =>
   axios
     .post(
-      "http://localhost:3001/pay-acc",
+      "http://localhost:3001/pay-acc/saving",
       {
         customerId,
         clientEmail,

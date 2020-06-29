@@ -69,7 +69,7 @@ export default class CreateAccount extends Component {
           Name: name,
           Phone: phone,
           Email: email,
-          Type: "2"
+          Type: "1"
         },
         {
           headers: {

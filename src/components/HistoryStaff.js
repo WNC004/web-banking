@@ -47,7 +47,8 @@ class HistoryStaff extends Component {
       });
 
     axios
-      .get(`http://localhost:3001/pay-accs-all/${customerId}`, {
+    //   .get(`http://localhost:3001/pay-accs-all/${customerId}`, {
+        .get(`http://localhost:3001/pay-accs`, {
         headers: {
           "x-access-token": getCookie("access_token")
         }

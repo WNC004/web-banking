@@ -3,7 +3,6 @@ import * as messageConstants from "../constants/messageConstants";
 
 const initState = {
   payAccs: [],
-  histories: [],
   // pay in panel
   payAccId: "",
   accNumber: "",
@@ -15,9 +14,7 @@ const initState = {
   messageType: "",
   message: "",
   // toggle pay in panel
-  togglePayInPanel: false,
-   // for dialog viewing payment account history
-  isDialogHistoryPayAccOpen: false
+  togglePayInPanel: false
 };
 
 const payAccStaffReducer = (state = initState, action) => {
@@ -29,16 +26,6 @@ const payAccStaffReducer = (state = initState, action) => {
         ...state,
         ...action.payload
       };
-    case payAccStaffConstants.OPEN_HISTORY_DIALOG:
-        return {
-          ...state,
-          ...action.payload
-        };
-        case payAccStaffConstants.OPEN_VIEW_HISTORY_DIALOG: 
-        return {
-          ...state,
-          ...action.payload
-        };
     case payAccStaffConstants.CLOSE_PAY_IN_PANEL:
       return {
         ...state,

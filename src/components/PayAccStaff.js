@@ -1,17 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import PayIn from "./PayIn";
 import Message from "./Message";
 import MustBeStaff from "./HOCs/MustBeStaff";
 import * as payAccStaffActions from "../redux/actions/payAccStaffActions";
 import * as messageActions from "../redux/actions/messageActions";
-import axios from "axios";
-import { getCookie } from "tiny-cookie";
 
 class PayAccStaff extends Component {
   componentDidMount = () => {
@@ -28,7 +23,6 @@ class PayAccStaff extends Component {
     const {
       payAccs,
       payAccId,
-      histories,
       accNumber,
       clientName,
       clientEmail,
@@ -36,8 +30,7 @@ class PayAccStaff extends Component {
       messageType,
       message,
       isMessageOpen,
-      togglePayInPanel,
-      isDialogHistoryPayAccOpen
+      togglePayInPanel
     } = this.props;
 
     const data = payAccs.map((payAcc, index) => [
@@ -67,23 +60,7 @@ class PayAccStaff extends Component {
         disabled={payAcc.status === "CLOSED"}
       >
         pay in
-      </Button>,
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() =>
-          this.props.openHistoryDialog(
-            payAcc.payAccId,
-            payAcc.accNumber,
-            payAcc.clientName,
-            payAcc.clientEmail,
-            payAcc.balance
-          )
-        }
-        disabled={payAcc.status === "CLOSED"}
-      >
-        History
-      </Button>,
+      </Button>
     ]);
 
     const columns = [
@@ -94,8 +71,7 @@ class PayAccStaff extends Component {
       "Balance",
       "Created at",
       "Status",
-      "Action",
-      "History"
+      "Action"
     ];
 
     const options = {
@@ -134,32 +110,6 @@ class PayAccStaff extends Component {
           open={isMessageOpen}
           onClose={this.props.closeMessage}
         />
-        <Dialog
-          open={isDialogHistoryPayAccOpen}
-          onClose={this.handleCloseHistoryPayAccDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          fullWidth={true}
-          maxWidth={"md"}
-        >
-          <DialogContent>
-            <MUIDataTable
-              title={`Recent activities of payment account ${accNumber}`}
-              data={data}
-              columns={columns}
-              options={options}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button
-              onClick={this.handleCloseHistoryPayAccDialog}
-              color="primary"
-              autoFocus
-            >
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
       </React.Fragment>
     );
   }
@@ -185,20 +135,6 @@ const mapDispatchToProps = dispatch => ({
   handlePayInSucceed: amount =>
     dispatch(payAccStaffActions.handlePayInSucceed(amount)),
   closeMessage: () => dispatch(messageActions.closeMessage()),
-  handleViewHistory: (payAccId, accNumber) =>  dispatch(
-    payAccStaffActions.handleViewHistory(
-      payAccId,
-      accNumber
-    )
-  ),
-  handleCloseHistoryPayAccDialog: () => dispatch(payAccStaffActions.handleCloseHistoryPayAccDialog()),
-  openHistoryDialog: (payAccId, accNumber) => dispatch(
-    payAccStaffActions.openHistoryDialog(
-      payAccId,
-      accNumber
-    )
-  )
-
 
 });
 

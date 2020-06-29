@@ -42,6 +42,7 @@ export const getPayAccsList = () => dispatch =>
       console.log(err);
     });
 
+
 export const openPayInPanel = (
   payAccId,
   accNumber,
@@ -72,6 +73,19 @@ export const closePayInPanel = () => ({
   }
 });
 
+export const handlePayInSucceed = amount => ({
+  type: payAccStaffConstants.HANDLE_PAY_IN_SUCCEED,
+  payload: {
+    currentBalance: +amount
+  }
+});
+
+export const handleCloseMessage = () => {
+  this.setState({ isMessageOpen: false, message: "" });
+};
+
+
+/// Xoa 
 export const openHistoryDialog = (
   payAccId,
   accNumber,
@@ -90,13 +104,7 @@ export const openHistoryDialog = (
   }
 });
 
-export const handlePayInSucceed = amount => ({
-  type: payAccStaffConstants.HANDLE_PAY_IN_SUCCEED,
-  payload: {
-    currentBalance: +amount
-  }
-});
-
+/// Xoa 
 export const handleViewHistory = (payAccId, accNumber) => {
   if (payAccId === undefined || accNumber === undefined)
     return this.setState({
@@ -145,6 +153,7 @@ export const handleViewHistory = (payAccId, accNumber) => {
     });
 };
 
+/// Xoa 
 export const handleCloseHistoryPayAccDialog = () => {
   this.setState({
     isDialogHistoryPayAccOpen: false,
@@ -154,6 +163,3 @@ export const handleCloseHistoryPayAccDialog = () => {
   });
 };
 
-export const handleCloseMessage = () => {
-  this.setState({ isMessageOpen: false, message: "" });
-};

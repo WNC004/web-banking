@@ -2,10 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import {
-  People as PeopleIcon,
   BarChart as BarChartIcon,
   Contacts as ContactsIcon,
-  Person as PersonIcon
+  ExitToApp as ExitToAppIcon ,
+  List as ListIcon,
+  VpnKey as VpnKeyIcon,
+  AccountBalanceWallet as AccountBalanceWalletIcon,
+  Public as PublicIcon,
 } from "@material-ui/icons";
 
 export const mainListItems = (
@@ -13,7 +16,7 @@ export const mainListItems = (
     <Link to="/payment-accounts">
       <ListItem button>
         <ListItemIcon>
-          <PeopleIcon />
+          <ListIcon />
         </ListItemIcon>
         <ListItemText primary="Payment Accounts" />
       </ListItem>
@@ -29,7 +32,7 @@ export const mainListItems = (
     <Link to="/external-transfers">
       <ListItem button>
         <ListItemIcon>
-          <ContactsIcon />
+          <PublicIcon />
         </ListItemIcon>
         <ListItemText primary="External transfers" />
       </ListItem>
@@ -45,7 +48,7 @@ export const mainListItems = (
     <Link to="/debt">
       <ListItem button>
         <ListItemIcon>
-          <ContactsIcon />
+          <AccountBalanceWalletIcon />
         </ListItemIcon>
         <ListItemText primary="Debt" />
       </ListItem>
@@ -53,7 +56,7 @@ export const mainListItems = (
     <Link to="/change-password">
       <ListItem button>
         <ListItemIcon>
-          <ContactsIcon />
+          <VpnKeyIcon />
         </ListItemIcon>
         <ListItemText primary="Change password" />
       </ListItem>
@@ -66,7 +69,7 @@ export const secondaryListItems = (
     <Link to="/sign-out">
       <ListItem button>
         <ListItemIcon>
-          <PersonIcon />
+          <ExitToAppIcon />
         </ListItemIcon>
         <ListItemText primary="Sign out" />
       </ListItem>

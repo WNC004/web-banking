@@ -2,9 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import {
-  People as PeopleIcon,
-  BarChart as BarChartIcon,
-  Person as PersonIcon
+  AccessTime as AccessTimeIcon,
+  ExitToApp as ExitToAppIcon ,
+  List as ListIcon,
+  AccountCircle as AccountCircleIcon,
 } from "@material-ui/icons";
 
 export const mainListItems = (
@@ -12,7 +13,7 @@ export const mainListItems = (
     <Link to="/customers">
       <ListItem button>
         <ListItemIcon>
-          <PeopleIcon />
+          <AccountCircleIcon />
         </ListItemIcon>
         <ListItemText primary="Customers" />
       </ListItem>
@@ -20,7 +21,7 @@ export const mainListItems = (
     <Link to="/payment-accounts-staff">
       <ListItem button>
         <ListItemIcon>
-          <BarChartIcon />
+          <ListIcon />
         </ListItemIcon>
         <ListItemText primary="Payment accounts" />
       </ListItem>
@@ -28,7 +29,7 @@ export const mainListItems = (
     <Link to="/history-staff">
       <ListItem button>
         <ListItemIcon>
-          <BarChartIcon />
+          <AccessTimeIcon />
         </ListItemIcon>
         <ListItemText primary="History" />
       </ListItem>
@@ -41,7 +42,7 @@ export const secondaryListItems = (
     <Link to="/sign-out">
       <ListItem button>
         <ListItemIcon>
-          <PersonIcon />
+          <ExitToAppIcon />
         </ListItemIcon>
         <ListItemText primary="Sign out" />
       </ListItem>

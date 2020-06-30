@@ -32,7 +32,10 @@ class Debts extends Component {
     account_creditor: "",
     debtId: "",
     isDialogClosePayAccOpen: false,
-    reason: ""
+    toAccount: "",
+    isDialogOpenTranfer: false,
+    messagePay:"",
+    reason:""
   };
 
   getListDebts = () =>{
@@ -116,9 +119,69 @@ class Debts extends Component {
   handleCloseClosePayAccDialog = () => {
     this.setState({
       isDialogClosePayAccOpen: false,
+      isDialogOpenTranfer: false,
       debtId: ""
     });
   };
+
+  onPayIn = (id, account, amount) =>{
+    const {customerId} = this.state;
+    axios
+      .post(
+        "http://localhost:3001/check-balance",
+        {
+          customerId,
+          amount
+        },
+        {
+          headers: {
+            "x-access-token": getCookie("access_token")
+          }
+        }
+      )
+      .then(resp => {
+        const { status } = resp;
+        const msg = resp.data.message;
+        const key = resp.data.key;
+        if (status === 200) {
+          if(key === "Failed"){
+            this.setState({
+              messageType: "error",
+              isMessageOpen: true,
+              message: msg
+            });
+          }
+          else{
+            this.setState({
+              toAccount: account,
+              isDialogOpenTranfer: true,
+              amount: amount,
+              debtId: id
+            })
+          }
+          
+        } else {
+          this.setState({
+            messageType: "error",
+            isMessageOpen: true,
+            message: "Sorry, failed creating new debt"
+          });
+          
+          // throw new Error(
+          //   "Something went wrong when creating new debt, status ",
+          //   status
+          // );
+        }
+      })
+      .catch(err => {
+        this.setState({
+          messageType: "error",
+          isMessageOpen: true,
+          message: "Sorry, failed creating new debt"
+        });
+        console.log(err);
+      });
+  }
 
   handleCreateDebt = (creditor_id, account, msg, amount) =>{
     axios
@@ -232,6 +295,61 @@ class Debts extends Component {
           })
   }
 
+  handleTranfer = () => {
+    const {
+      customerId,
+      debtId,
+      messagePay,
+      toAccount,
+      amount
+    } = this.state;
+    axios
+          .post(`http://localhost:3001/debt/tranfer/`, 
+          {
+            customerId,
+            debtId,
+            messagePay,
+            toAccount,
+            amount
+          },
+          {
+            headers: {
+              "x-access-token": getCookie("access_token")
+            }
+          })
+          .then(resp => {
+            const { status } = resp;
+            if (status === 200) {
+              this.setState({
+              messageType: "success",
+              isMessageOpen: true,
+              message: "You pay in this debt",
+              isDialogOpenTranfer: false,
+              debtId: "",
+              amount:"",
+              toAccount:"",
+              messagePay:""
+            });
+            this.getListDebts();
+            } else {
+              this.setState({
+                messageType: "error",
+                isMessageOpen: true,
+                message: "Failed tranfer this debt",
+                isDialogClosePayAccOpen: false,
+                debtId: "",
+                amount:"",
+                toAccount:"",
+                messagePay:""
+              });
+              throw new Error(
+                "Something went wrong when getting contacts list, status ",
+                status
+              );
+            }
+          })
+  }
+
   handleNotify = (id, email_debtor)=>{
     axios
     .post(`http://localhost:3001/debt/notify/`, 
@@ -283,7 +401,10 @@ class Debts extends Component {
       msg,
       amount,
       isDialogClosePayAccOpen,
-      reason
+      reason,
+      toAccount,
+      isDialogOpenTranfer,
+      messagePay
     } = this.state;
 
     const data = debtsOwner.map((debt, index) => {
@@ -318,16 +439,8 @@ class Debts extends Component {
         account_creditor,
         createdAt,
         <div>
-        <Button variant="contained" color="primary">
-          <Link
-            to={{
-              pathname: "/internal-transfers",
-              state: { receiverPayAccNumber: account_creditor}
-            }}
-            style={{ color: "white" }}
-          >
+        <Button variant="contained" color="primary" onClick={() => this.onPayIn(id, account, amount)}>
             Pay
-          </Link>
         </Button>
         <Button variant="contained" color="secondary" onClick={() => this.onClosePayAcc(id)}>
           Delete
@@ -416,12 +529,6 @@ class Debts extends Component {
                       amount
                     )
                   }
-                  // disabled={
-                  //   toAccNumber.trim() === "" ||
-                  //   contacts.find(
-                  //     contact => contact.toAccNumber === toAccNumber.trim()
-                  //   )
-                  // }
                 >
                   Create debt
                 </Button>
@@ -485,6 +592,43 @@ class Debts extends Component {
             </Button>
             <Button onClick={this.handleClosePayAcc} color="primary" autoFocus>
               Yes, I'm sure
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={isDialogOpenTranfer}
+          onClose={this.handleCloseClosePayAccDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {`Are you sure to pay in this debt`}
+          </DialogTitle>
+          <DialogContent
+            style={{ width: "600px", height: "auto", maxHeight: "1000px" }}
+          >
+           
+              {/* <React.Fragment>
+              <TextField
+                  id="messagePay"
+                  label="Message"
+                  autoFocus
+                  fullWidth
+                  margin="normal"
+                  onChange={this.handleInputChange}
+                  name="messagePay"
+                  value={messagePay}
+                />
+              </React.Fragment> */}
+            
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseClosePayAccDialog} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleTranfer} color="primary" autoFocus>
+              Tranfer
             </Button>
           </DialogActions>
         </Dialog>

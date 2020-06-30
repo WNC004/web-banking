@@ -40,8 +40,44 @@ class ExternalTransfer extends Component {
       OTP: "",
       checkOTP: null,
       isInContacts: true,
-      saveContact: true
+      saveContact: true,
+      banks: []
     };
+  }
+
+  getListBanks = () =>{
+    axios
+      .post("http://localhost:3001/pay-acc/banks",
+      {},
+      {
+        headers: {
+          "x-access-token": getCookie("access_token")
+        }
+      })
+      .then(resp => {
+        const { status, data: list } = resp;
+        if (status === 200) {
+           this.setState({
+            messageType: "success",
+            banks: list
+          });
+        } else {
+          this.setState({
+            messageType: "error",
+            message: "Failed get list banks"
+          });
+          throw new Error(
+            "Something went wrong when getting contacts list, status ",
+            status
+          );
+        }
+      })
+      .catch(err => {
+        this.setState({
+          messageType: "error",
+          message: "Failed get list banks"
+        });
+      });
   }
 
   getPayAccsList = () => {
@@ -96,6 +132,7 @@ class ExternalTransfer extends Component {
 
   componentDidMount = () => {
     this.getPayAccsList();
+    this.getListBanks();
   };
 
   handleInputChange = e => {
@@ -527,7 +564,8 @@ class ExternalTransfer extends Component {
       OTP,
       checkOTP,
       saveContact,
-      isInContacts
+      isInContacts,
+      banks
     } = this.state;
 
     return (
@@ -633,16 +671,27 @@ class ExternalTransfer extends Component {
                     value={transferMsg}
                     disabled={currentBalance < 10000}
                   />
-                  <TextField
-                    id="transferBank"
-                    label="Bank name *"
-                    fullWidth
-                    margin="normal"
-                    onChange={this.handleInputChange}
-                    name="transferBank"
-                    value={transferBank}
-                    disabled={currentBalance < 10000}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="payAccId">
+                      Bank Name *
+                    </InputLabel>
+                    <Select
+                      value={transferBank}
+                      onChange={this.handleInputChange}
+                      inputProps={{
+                        name: "transferBank",
+                        id: "transferBank"
+                      }}
+                      autoFocus
+                      disabled={currentBalance < 10000}
+                    >
+                      {banks.map((bank, index) => (
+                        <MenuItem key={index} value={bank.id}>
+                          {bank.bank_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </div>
                 <div>
                   <div style={{ textAlign: "left" }}>

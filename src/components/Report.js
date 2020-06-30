@@ -173,7 +173,12 @@ class Reports extends Component {
         toAccNumber, 
         bank_id,
         new Date(createdAt).toLocaleString(),
-        transactionType,
+        // transactionType,
+        <span style={{ 
+          color: transactionType === "sent" ? "#66ff99" :  transactionType === "received" ? "#ff9933" : "#ff0066"
+        }}>
+          {history.transactionType.toUpperCase()}
+        </span>,
         amount
       ]
     }

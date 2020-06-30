@@ -10,6 +10,7 @@ import MustBeCustomer from "./HOCs/MustBeCustomer";
 import { getUserInfo } from "../utils/authHelper";
 import moment from 'moment';
 import * as cryptoJS from "crypto-js";
+import md5 from 'md5';
 
 class ExternalTransfer extends Component {
   constructor(props) {
@@ -150,18 +151,27 @@ class ExternalTransfer extends Component {
 
     console.log(transferBank);
     console.log(receiverPayAccNumber);
-    const ts = moment().unix();
-    var data = ts + JSON.stringify({card_number: receiverPayAccNumber})
-    // const card_number_0 = 5678900008;
 
+    var cardRSA = +receiverPayAccNumber; 
+    console.log(cardRSA);
+
+    var ts = Date.now();
+    var dataRSA = ts + JSON.stringify({card_number: cardRSA})
+    // const card_number_0 = 5678900008;
+    var signature = "";
     if(transferBank === "Truong Bank")
     {
-      var signRSA = cryptoJS.HmacSHA256(data, "secretKey").toString();
-      console.log(signRSA);
+      signature = cryptoJS.HmacSHA256(dataRSA, "secretKey").toString();
+      console.log(signature);
+    }
+    else if(transferBank ==="Dat Bank")
+    {
+      signature = md5(JSON.stringify({stk: cardRSA}) + ts + "secretKey");
+      console.log(signature);
     }
     else 
     {
-      console.log("Not a rsa bank !!!");
+      console.log("Not a bank !!!");
     }    
     console.log(ts);
 
@@ -184,15 +194,28 @@ class ExternalTransfer extends Component {
         //     "x-access-token": getCookie("access_token")
         //   }
         // }),
-        axios.get(`https://internet-banking-api-17.herokuapp.com/api/users`, {
+        axios.post(`https://internet-banking-api-17.herokuapp.com/api/users`, {
+          card_number: cardRSA
+        },{
           headers: {
             // "x-access-token": getCookie("access_token")
-            'ts': ts,
-            'partner_code': 2,
-            'sign': signRSA
+            "ts": ts,
+            "partner-code": 2,
+            "sign": signature
           },
-          data: {card_number: receiverPayAccNumber}
         }),
+        // axios.post(`https://dacc-internet-banking.herokuapp.com/bank/getCustomer`, {
+        //   stk: cardRSA
+        // },{
+        //   headers: {
+        //     // "x-access-token": getCookie("access_token")
+        //     "Access-Control-Allow-Origin": "*",
+        //     "Access-Control-Allow-Headers": "X-Requested-With",
+        //     "ts": ts,
+        //     "company_id": "pawGDX1Ddu",
+        //     "sig": signature
+        //   }
+        // }),
         axios.get(
           `http://localhost:3001/contact/${receiverPayAccNumber}/is-existed?customerId=${getUserInfo(
             "f_id"
@@ -243,9 +266,10 @@ class ExternalTransfer extends Component {
               isMessageOpen: true,
               message: `No payment account attached to ${receiverPayAccNumber}, please try another one`
             });
-
+          
+          console.log(getReceiver.data[0]);
           const {
-            id: receiverPayAccId,
+            // id: receiverPayAccId,
             clientName: receiverName,
             clientEmail: receiverEmail,
             phone: receiverPhone,
@@ -274,7 +298,7 @@ class ExternalTransfer extends Component {
           console.log(getContactExisted.data.existed);
           this.setState({
             checkOTP,
-            receiverPayAccId,
+            // receiverPayAccId,
             receiverName,
             receiverEmail,
             receiverPhone,

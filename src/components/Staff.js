@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import {
-  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography
+  Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 import Message from "./Message";
@@ -211,7 +211,8 @@ class Staffs extends Component {
                   staffId,
                   staffEmail,
                   staffName,
-                  phone
+                  phone,
+                  reload
                 )
               }
               color="primary"
@@ -235,13 +236,14 @@ const mapDispatchToProps = dispatch => ({
   getStaffsList: () => dispatch(staffsActions.getStaffsList()),
   closeMessage: () => dispatch(messageActions.closeMessage()),
   //Delete
-  handleDeleteDialog: (staffId, staffEmail, staffName, phone) =>
+  handleDeleteDialog: (staffId, staffEmail, staffName, phone,reload) =>
     dispatch(
       staffsActions.handleDeleteDialog(
         staffId,
         staffEmail,
         staffName,
-        phone
+        phone,
+        reload
       )
     ),
   openDeleteConfirmDialog: (staffId, staffEmail, staffName, phone) =>
@@ -256,7 +258,6 @@ const mapDispatchToProps = dispatch => ({
     closeDeleteConfirmDialog: () =>
     dispatch(staffsActions.closeDeleteConfirmDialog()),
     handleInputChange: e => dispatch(staffsActions.handleInputChange(e)),
-    closeMessage: () => dispatch(messageActions.closeMessage()),
     //Edit
     handleEditDialog: (staffId, staffEmail, staffName, phone, reload) =>
     dispatch(

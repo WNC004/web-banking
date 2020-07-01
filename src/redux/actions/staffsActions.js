@@ -46,7 +46,8 @@ export const getStaffsList = () => dispatch =>
       staffId,
       staffEmail,
       staffName,
-      phone
+      phone,
+      reload
     ) => dispatch =>
       axios
         .post(
@@ -76,6 +77,10 @@ export const getStaffsList = () => dispatch =>
                 staffId: "",
                 staffEmail: "",
                 staffName: "",
+                isMessageOpen: true,
+                messageType: "success",
+                message: "Successful delete staff",
+                reload: !reload
               }
             });
           } else {
@@ -86,6 +91,7 @@ export const getStaffsList = () => dispatch =>
                 staffId: "",
                 staffEmail: "",
                 staffName: "",
+                isMessageOpen: true,
                 messageType: "error",
                 message: "Failed delete staff"
               }
@@ -104,6 +110,7 @@ export const getStaffsList = () => dispatch =>
               staffId: "",
               staffEmail: "",
               staffName: "",
+              isMessageOpen: true,
               messageType: "error",
               message: "Failed delete staff"
             }

@@ -10,7 +10,35 @@ import MustBeCustomer from "./HOCs/MustBeCustomer";
 import { getUserInfo } from "../utils/authHelper";
 import moment from 'moment';
 import * as cryptoJS from "crypto-js";
+import * as crypto from "crypto";
 import md5 from 'md5';
+
+const publicKeyRSA = `
+-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCNmA/Sx5WF4NJ6vHZbVbrTVVfy
+wjL5J/CPfXOYxL9tGeAyVaj4OwT+pnnPLshDMpqX00492nw4I8nPocWswCZoIfG3
+dZ3Vse1meg/xaC9aCLvwN+vI6t3kadCqoq16tO7zARyt0LqmcBjQcZuIO3Yb4i5K
+8X04Gf4sXgKYMRQOLwIDAQAB
+-----END PUBLIC KEY-----
+`;
+
+const privateKeyRSA = `
+-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCNmA/Sx5WF4NJ6vHZbVbrTVVfywjL5J/CPfXOYxL9tGeAyVaj4
+OwT+pnnPLshDMpqX00492nw4I8nPocWswCZoIfG3dZ3Vse1meg/xaC9aCLvwN+vI
+6t3kadCqoq16tO7zARyt0LqmcBjQcZuIO3Yb4i5K8X04Gf4sXgKYMRQOLwIDAQAB
+AoGAINZ2PPz6iVz1k29nx5DfTinJxswRBEWl/bErgO+IMaZBn4rMMB2H8ALt1wXT
+ffobbkCcMa4dBuwN3rB25rR9c2oqZknSyDnIWSS1jQUKcmtWb5tId//hsKKjeZ3U
+ItE3P4t/tD2dLnN0dggNVsh3AsVf+C778UQ6ALcdjQVKMZECQQDUpEduYvr0Icp/
+6qoCvjXml/w+opevfV3ldeq/KT2Se1x3zeYMu0f0H7op08QIw6QqiTn42R/Y09QP
+3P41t7YXAkEAqncmjeyEDoPkYph1FPlcfo/EcmvIlEOQMkJBVy7d1GpyOgXE9ttf
+wO47V/ouUEb8tHLuddWgXJk1PFbQqFqPqQJBAJBii+40X1ptp2Z8HLyIE2lkQe71
+0DFk2uD31FHA2wIfqYXf1RlIAW+OK4ZDOJUK4unPDAIgzDMagp/S2vn2qDkCQCEL
+4kSHQn6R4RegGKqNQPokIuBPtt3PT0f/Ai3FnymLzUMkVS/KDYEYbha7IHldmaXd
+1g6v8FujM+fTqLXKgKkCQB8m9BvsgZOY+4MAV/wB+ZpOTtOnDjlSS5fRjVpU4+6r
++cbhFq6qDyH3vQYLy2QvmV/OKAjCp/vSKqNbUxfcvxg=
+-----END RSA PRIVATE KEY-----
+`;
 
 class ExternalTransfer extends Component {
   constructor(props) {
@@ -58,7 +86,7 @@ class ExternalTransfer extends Component {
       .then(resp => {
         const { status, data: list } = resp;
         if (status === 200) {
-           this.setState({
+          this.setState({
             messageType: "success",
             banks: list
           });
@@ -193,17 +221,21 @@ class ExternalTransfer extends Component {
     console.log(cardRSA);
 
     var ts = Date.now();
+    console.log(ts);
     var dataRSA = ts + JSON.stringify({card_number: cardRSA})
-    // const card_number_0 = 5678900008;
     var signature = "";
+    var url = "";
+
     if(transferBank === "Truong Bank")
     {
       signature = cryptoJS.HmacSHA256(dataRSA, "secretKey").toString();
+      url = `https://internet-banking-api-17.herokuapp.com/api/users`;
       console.log(signature);
     }
-    else if(transferBank ==="Dat Bank")
+    else if(transferBank ==="PGP Bank")
     {
       signature = md5(JSON.stringify({stk: cardRSA}) + ts + "secretKey");
+      // url = `https://internet-banking-api-17.herokuapp.com/api/users`;
       console.log(signature);
     }
     else 
@@ -226,12 +258,7 @@ class ExternalTransfer extends Component {
             }
           }
         ),
-        // axios.get(`http://localhost:3001/pay-acc/${receiverPayAccNumber}`, {
-        //   headers: {
-        //     "x-access-token": getCookie("access_token")
-        //   }
-        // }),
-        axios.post(`https://internet-banking-api-17.herokuapp.com/api/users`, {
+        axios.post(url, {
           card_number: cardRSA
         },{
           headers: {
@@ -241,18 +268,6 @@ class ExternalTransfer extends Component {
             "sign": signature
           },
         }),
-        // axios.post(`https://dacc-internet-banking.herokuapp.com/bank/getCustomer`, {
-        //   stk: cardRSA
-        // },{
-        //   headers: {
-        //     // "x-access-token": getCookie("access_token")
-        //     "Access-Control-Allow-Origin": "*",
-        //     "Access-Control-Allow-Headers": "X-Requested-With",
-        //     "ts": ts,
-        //     "company_id": "pawGDX1Ddu",
-        //     "sig": signature
-        //   }
-        // }),
         axios.get(
           `http://localhost:3001/contact/${receiverPayAccNumber}/is-existed?customerId=${getUserInfo(
             "f_id"
@@ -279,7 +294,7 @@ class ExternalTransfer extends Component {
               getOTP.status
             );
           }
-
+          
           if (getReceiver.status !== 200) {
             this.setState({
               messageType: "error",
@@ -304,14 +319,13 @@ class ExternalTransfer extends Component {
               message: `No payment account attached to ${receiverPayAccNumber}, please try another one`
             });
           
-          console.log(getReceiver.data[0]);
+          console.log(getReceiver.data);
+
           const {
-            // id: receiverPayAccId,
-            clientName: receiverName,
-            clientEmail: receiverEmail,
-            phone: receiverPhone,
-            balance: receiverCurrentBalance
-          } = getReceiver.data[0];
+            full_name: receiverName,
+            email: receiverEmail,
+            phone_number: receiverPhone,
+          } = getReceiver.data;
 
           const senderFee = +feeType === 1 ? 10000 : 0,
             receiverFee = +feeType === 2 ? 10000 : 0;
@@ -323,7 +337,9 @@ class ExternalTransfer extends Component {
             });
           if (
             +feeType === 2 &&
-            +receiverFee > +receiverCurrentBalance + +transferAmount
+            // +receiverFee > +receiverCurrentBalance + +transferAmount
+            +receiverFee >  +transferAmount
+
           )
             return this.setState({
               messageType: "error",
@@ -340,7 +356,7 @@ class ExternalTransfer extends Component {
             receiverEmail,
             receiverPhone,
             receiverPayAccNumber,
-            receiverCurrentBalance,
+            // receiverCurrentBalance,
             isDialogOTPOpen: true,
             isInContacts
           });
@@ -383,6 +399,19 @@ class ExternalTransfer extends Component {
     const senderFee = +feeType === 1 ? 10000 : 0,
       receiverFee = +feeType === 2 ? 10000 : 0;
 
+    var ts = moment().unix();
+    console.log(ts);
+
+    var data = ts + JSON.stringify({ 
+      card_number: receiverPayAccNumber,
+      money: transferAmount,
+      message: transferMsg,
+      card_number_sender: payAccId});
+
+    const sign = crypto.createSign('SHA256');
+    sign.write(data); // đưa data cần kí vào đây
+    const signature = sign.sign(privateKeyRSA, 'hex'); // tạo chữ kí bằng private key
+    
     const axiosArr = [
       axios.patch(
         "http://localhost:3001/pay-acc/balance",
@@ -400,7 +429,7 @@ class ExternalTransfer extends Component {
         "http://localhost:3001/pay-acc/balance",
         {
           payAccId: receiverPayAccId,
-          newBalance: +receiverCurrentBalance + +transferAmount - receiverFee
+          newBalance: +transferAmount - receiverFee
         },
         {
           headers: {
@@ -441,6 +470,22 @@ class ExternalTransfer extends Component {
             "x-access-token": getCookie("access_token")
           }
         }
+      ),
+      axios.post(
+        `https://internet-banking-api-17.herokuapp.com/api/transfer-money`,
+        {
+          card_number: receiverPayAccNumber,
+          money: transferAmount,
+          message: transferMsg,
+          card_number_sender: payAccId
+        },
+        {
+          headers: {
+            "ts": ts,
+            "partner-code": 2,
+            "sign": signature
+          }
+        }
       )
     ];
 
@@ -469,7 +514,8 @@ class ExternalTransfer extends Component {
             updateSenderPayAcc,
             updateReceiverPayAcc,
             sendHistory,
-            receiveHistory
+            receiveHistory,
+            transferStatus
           ) => {
             if (
               updateSenderPayAcc.status !== 201 ||
@@ -526,6 +572,23 @@ class ExternalTransfer extends Component {
                 }, // refresh payment accounts
                 this.setState({ feeType: "1" }, this.getPayAccsList)
               );
+
+            
+              if(transferStatus != 201)
+              {
+                this.setState({
+                  messageType: "error",
+                  isMessageOpen: true,
+                  message: "Sorry, failed completing the transaction"
+                });
+                throw new Error(
+                  "Something went wrong when updating history of the transaction, status ",
+                  updateSenderPayAcc.status
+                );
+              }  
+
+              console.log(transferStatus.status);
+              
           }
         )
       )
@@ -710,7 +773,7 @@ class ExternalTransfer extends Component {
                       disabled={currentBalance < 10000}
                     >
                       {banks.map((bank, index) => (
-                        <MenuItem key={index} value={bank.id}>
+                        <MenuItem key={index} value={bank.bank_name}>
                           {bank.bank_name}
                         </MenuItem>
                       ))}

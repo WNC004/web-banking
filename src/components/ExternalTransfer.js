@@ -10,35 +10,7 @@ import MustBeCustomer from "./HOCs/MustBeCustomer";
 import { getUserInfo } from "../utils/authHelper";
 import moment from 'moment';
 import * as cryptoJS from "crypto-js";
-import * as crypto from "crypto";
 import md5 from 'md5';
-
-const publicKeyRSA = `
------BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCNmA/Sx5WF4NJ6vHZbVbrTVVfy
-wjL5J/CPfXOYxL9tGeAyVaj4OwT+pnnPLshDMpqX00492nw4I8nPocWswCZoIfG3
-dZ3Vse1meg/xaC9aCLvwN+vI6t3kadCqoq16tO7zARyt0LqmcBjQcZuIO3Yb4i5K
-8X04Gf4sXgKYMRQOLwIDAQAB
------END PUBLIC KEY-----
-`;
-
-const privateKeyRSA = `
------BEGIN RSA PRIVATE KEY-----
-MIICXAIBAAKBgQCNmA/Sx5WF4NJ6vHZbVbrTVVfywjL5J/CPfXOYxL9tGeAyVaj4
-OwT+pnnPLshDMpqX00492nw4I8nPocWswCZoIfG3dZ3Vse1meg/xaC9aCLvwN+vI
-6t3kadCqoq16tO7zARyt0LqmcBjQcZuIO3Yb4i5K8X04Gf4sXgKYMRQOLwIDAQAB
-AoGAINZ2PPz6iVz1k29nx5DfTinJxswRBEWl/bErgO+IMaZBn4rMMB2H8ALt1wXT
-ffobbkCcMa4dBuwN3rB25rR9c2oqZknSyDnIWSS1jQUKcmtWb5tId//hsKKjeZ3U
-ItE3P4t/tD2dLnN0dggNVsh3AsVf+C778UQ6ALcdjQVKMZECQQDUpEduYvr0Icp/
-6qoCvjXml/w+opevfV3ldeq/KT2Se1x3zeYMu0f0H7op08QIw6QqiTn42R/Y09QP
-3P41t7YXAkEAqncmjeyEDoPkYph1FPlcfo/EcmvIlEOQMkJBVy7d1GpyOgXE9ttf
-wO47V/ouUEb8tHLuddWgXJk1PFbQqFqPqQJBAJBii+40X1ptp2Z8HLyIE2lkQe71
-0DFk2uD31FHA2wIfqYXf1RlIAW+OK4ZDOJUK4unPDAIgzDMagp/S2vn2qDkCQCEL
-4kSHQn6R4RegGKqNQPokIuBPtt3PT0f/Ai3FnymLzUMkVS/KDYEYbha7IHldmaXd
-1g6v8FujM+fTqLXKgKkCQB8m9BvsgZOY+4MAV/wB+ZpOTtOnDjlSS5fRjVpU4+6r
-+cbhFq6qDyH3vQYLy2QvmV/OKAjCp/vSKqNbUxfcvxg=
------END RSA PRIVATE KEY-----
-`;
 
 class ExternalTransfer extends Component {
   constructor(props) {
@@ -235,7 +207,7 @@ class ExternalTransfer extends Component {
     else if(transferBank ==="PGP Bank")
     {
       signature = md5(JSON.stringify({stk: cardRSA}) + ts + "secretKey");
-      // url = `https://internet-banking-api-17.herokuapp.com/api/users`;
+      url = `https://dacc-internet-banking.herokuapp.com/bank/getCustomer`;
       console.log(signature);
     }
     else 
@@ -265,7 +237,8 @@ class ExternalTransfer extends Component {
             // "x-access-token": getCookie("access_token")
             "ts": ts,
             "partner-code": 2,
-            "sign": signature
+            "sign": signature,
+            "company_id": "pawGDX1Ddu"
           },
         }),
         axios.get(
@@ -398,27 +371,17 @@ class ExternalTransfer extends Component {
     // call API
     const senderFee = +feeType === 1 ? 10000 : 0,
       receiverFee = +feeType === 2 ? 10000 : 0;
-
-    var ts = moment().unix();
-    console.log(ts);
-
-    var data = ts + JSON.stringify({ 
-      card_number: receiverPayAccNumber,
-      money: transferAmount,
-      message: transferMsg,
-      card_number_sender: payAccId});
-
-    const sign = crypto.createSign('SHA256');
-    sign.write(data); // đưa data cần kí vào đây
-    const signature = sign.sign(privateKeyRSA, 'hex'); // tạo chữ kí bằng private key
     
     const axiosArr = [
       axios.patch(
-        "http://localhost:3001/pay-acc/balance",
+        "http://localhost:3001/pay-acc/RSA/balance",
         {
           payAccId,
-          newBalance: +currentBalance - +transferAmount - senderFee
-        },
+          newBalance: +transferAmount,
+          message: transferMsg,
+          receiveCard: receiverPayAccNumber,
+          updateBalance: currentBalance - +transferAmount - senderFee
+        },  
         {
           headers: {
             "x-access-token": getCookie("access_token")
@@ -426,10 +389,13 @@ class ExternalTransfer extends Component {
         }
       ),
       axios.patch(
-        "http://localhost:3001/pay-acc/balance",
+        "http://localhost:3001/pay-acc/RSA/balance",
         {
           payAccId: receiverPayAccId,
-          newBalance: +transferAmount - receiverFee
+          newBalance: +transferAmount - receiverFee,
+          message: transferMsg,
+          receiveCard: receiverPayAccNumber,
+          updateBalance: currentBalance - +transferAmount
         },
         {
           headers: {
@@ -470,22 +436,6 @@ class ExternalTransfer extends Component {
             "x-access-token": getCookie("access_token")
           }
         }
-      ),
-      axios.post(
-        `https://internet-banking-api-17.herokuapp.com/api/transfer-money`,
-        {
-          card_number: receiverPayAccNumber,
-          money: transferAmount,
-          message: transferMsg,
-          card_number_sender: payAccId
-        },
-        {
-          headers: {
-            "ts": ts,
-            "partner-code": 2,
-            "sign": signature
-          }
-        }
       )
     ];
 
@@ -514,8 +464,7 @@ class ExternalTransfer extends Component {
             updateSenderPayAcc,
             updateReceiverPayAcc,
             sendHistory,
-            receiveHistory,
-            transferStatus
+            receiveHistory
           ) => {
             if (
               updateSenderPayAcc.status !== 201 ||
@@ -573,21 +522,6 @@ class ExternalTransfer extends Component {
                 this.setState({ feeType: "1" }, this.getPayAccsList)
               );
 
-            
-              if(transferStatus != 201)
-              {
-                this.setState({
-                  messageType: "error",
-                  isMessageOpen: true,
-                  message: "Sorry, failed completing the transaction"
-                });
-                throw new Error(
-                  "Something went wrong when updating history of the transaction, status ",
-                  updateSenderPayAcc.status
-                );
-              }  
-
-              console.log(transferStatus.status);
               
           }
         )

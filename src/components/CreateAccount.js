@@ -3,7 +3,7 @@ import { getCookie } from "tiny-cookie";
 import axios from "axios";
 import { Button, Paper, TextField, Typography } from "@material-ui/core";
 import Message from "./Message";
-
+import validator from "validator";
 export default class CreateAccount extends Component {
   state = {
     username: "",
@@ -43,18 +43,39 @@ export default class CreateAccount extends Component {
   handleSignUp = () => {
     const { username, email, name, password, phone } = this.state;
     // validate email
-    const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (emailRegEx.test(email) === false)
+    // const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    // if (emailRegEx.test(email) === false)
+    if (!validator.isEmail(email))
       return this.setState({
         messageType: "warning",
         isMessageOpen: true,
         message: "Check if email were in invalid format or empty"
       });
-    // validate address, name, password, phone
-    if (username.trim() === "" ||
-      name.trim() === "" ||
-      password === "" ||
-      phone === ""
+    //validate phone number
+    const phoneRegex = /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/;
+    if(phoneRegex.test(phone) === false)
+    return this.setState({
+      messageType: "warning",
+      isMessageOpen: true,
+      message: "Check if phone number were in invalid format or empty"
+    });
+    //validate password length >=8
+    if(validator.isLength(password, {min: 0, max: 7}))
+    return this.setState({
+      messageType: "warning",
+      isMessageOpen: true,
+      message: "Check if Your password is too weak or empty"
+    });
+    // validate address, name, password, phone is empty?
+    // if (username.trim() === "" ||
+    //   name.trim() === "" ||
+    //   password === "" ||
+    //   phone === ""
+    // )
+    if (validator.isEmpty(username) ||
+      validator.isEmpty(name) ||
+      validator.isEmpty(password) ||
+      validator.isEmpty(phone)
     )
       return this.setState({
         messageType: "warning",

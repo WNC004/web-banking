@@ -21,6 +21,7 @@ class ExternalTransfer extends Component {
       bankName: "",
       payAccId: "",
       currentBalance: 0,
+      accNumber: "",
       // for notify message
       isMessageOpen: false,
       messageType: "",
@@ -368,6 +369,8 @@ class ExternalTransfer extends Component {
       isInContacts
     } = this.state;
 
+    console.log(accNumber);
+
     // call API
     const senderFee = +feeType === 1 ? 10000 : 0,
       receiverFee = +feeType === 2 ? 10000 : 0;
@@ -377,6 +380,7 @@ class ExternalTransfer extends Component {
         "http://localhost:3001/pay-acc/RSA/balance",
         {
           payAccId,
+          senderCard: accNumber,
           newBalance: +transferAmount,
           message: transferMsg,
           receiveCard: receiverPayAccNumber,
@@ -391,7 +395,8 @@ class ExternalTransfer extends Component {
       axios.patch(
         "http://localhost:3001/pay-acc/RSA/balance",
         {
-          payAccId: receiverPayAccId,
+          payAccId,
+          senderCard: accNumber,
           newBalance: +transferAmount - receiverFee,
           message: transferMsg,
           receiveCard: receiverPayAccNumber,

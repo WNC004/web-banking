@@ -207,9 +207,7 @@ class ExternalTransfer extends Component {
     }
     else if(transferBank ==="PGP Bank")
     {
-      signature = md5(JSON.stringify({stk: cardRSA}) + ts + "secretKey");
-      url = `https://dacc-internet-banking.herokuapp.com/bank/getCustomer`;
-      console.log(signature);
+      url = "http://localhost:3001/pay-acc/PGP/user";
     }
     else 
     {
@@ -235,12 +233,11 @@ class ExternalTransfer extends Component {
           card_number: cardRSA
         },{
           headers: {
-            // "x-access-token": getCookie("access_token")
+            "x-access-token": getCookie("access_token"),
             "ts": ts,
             "partner-code": 2,
-            "sign": signature,
-            "company_id": "pawGDX1Ddu"
-          },
+            "sign": signature
+        },
         }),
         axios.get(
           `http://localhost:3001/contact/${receiverPayAccNumber}/is-existed?customerId=${getUserInfo(
@@ -294,12 +291,12 @@ class ExternalTransfer extends Component {
             });
           
           console.log(getReceiver.data);
-
           const {
             full_name: receiverName,
             email: receiverEmail,
             phone_number: receiverPhone,
           } = getReceiver.data;
+        
 
           const senderFee = +feeType === 1 ? 10000 : 0,
             receiverFee = +feeType === 2 ? 10000 : 0;
@@ -370,6 +367,7 @@ class ExternalTransfer extends Component {
     } = this.state;
 
     console.log(accNumber);
+    console.log(transferBank);
 
     // call API
     const senderFee = +feeType === 1 ? 10000 : 0,
@@ -397,7 +395,7 @@ class ExternalTransfer extends Component {
         {
           payAccId,
           senderCard: accNumber,
-          newBalance: +transferAmount - receiverFee,
+          newBalance: transferAmount - receiverFee,
           message: transferMsg,
           receiveCard: receiverPayAccNumber,
           updateBalance: currentBalance - +transferAmount
@@ -409,7 +407,7 @@ class ExternalTransfer extends Component {
         }
       ),
       axios.post(
-        "http://localhost:3001/history",
+        "http://localhost:3001/historyConnect",
         {
           payAccId,
           fromAccNumber: accNumber,
@@ -417,7 +415,8 @@ class ExternalTransfer extends Component {
           amount: +transferAmount,
           transactionType: "sent",
           feeType: -+senderFee,
-          message: transferMsg
+          message: transferMsg,
+          bank_id: transferBank
         },
         {
           headers: {
@@ -425,23 +424,23 @@ class ExternalTransfer extends Component {
           }
         }
       ),
-      axios.post(
-        "http://localhost:3001/history",
-        {
-          payAccId: receiverPayAccId,
-          fromAccNumber: accNumber,
-          toAccNumber: receiverPayAccNumber,
-          amount: +transferAmount,
-          transactionType: "received",
-          feeType: -+receiverFee,
-          message: transferMsg
-        },
-        {
-          headers: {
-            "x-access-token": getCookie("access_token")
-          }
-        }
-      )
+      // axios.post(
+      //   "http://localhost:3001/history",
+      //   {
+      //     payAccId: receiverPayAccId,
+      //     fromAccNumber: accNumber,
+      //     toAccNumber: receiverPayAccNumber,
+      //     amount: +transferAmount,
+      //     transactionType: "received",
+      //     feeType: -+receiverFee,
+      //     message: transferMsg
+      //   },
+      //   {
+      //     headers: {
+      //       "x-access-token": getCookie("access_token")
+      //     }
+      //   }
+      // )
     ];
 
     if (saveContact === true && isInContacts === false)
@@ -469,7 +468,7 @@ class ExternalTransfer extends Component {
             updateSenderPayAcc,
             updateReceiverPayAcc,
             sendHistory,
-            receiveHistory
+            // receiveHistory
           ) => {
             if (
               updateSenderPayAcc.status !== 201 ||
@@ -486,7 +485,9 @@ class ExternalTransfer extends Component {
               );
             }
 
-            if (sendHistory.status !== 201 || receiveHistory.status !== 201) {
+            // if (sendHistory.status !== 201 || receiveHistory.status !== 201) 
+            if (sendHistory.status !== 201 ) 
+            {
               this.setState({
                 messageType: "error",
                 isMessageOpen: true,
@@ -501,8 +502,8 @@ class ExternalTransfer extends Component {
             if (
               updateSenderPayAcc.status === 201 &&
               updateReceiverPayAcc.status === 201 &&
-              sendHistory.status === 201 &&
-              receiveHistory.status === 201
+              sendHistory.status === 201 
+              // && receiveHistory.status === 201
             )
               this.setState(
                 {

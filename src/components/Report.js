@@ -222,7 +222,7 @@ class Reports extends Component {
                     
                     >
                       {banks.map((bank, index) => (
-                        <MenuItem key={index} value={bank.id}>
+                        <MenuItem key={index} value={bank.bank_name}>
                           {bank.bank_name}
                         </MenuItem>
                       ))}

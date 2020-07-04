@@ -43,8 +43,6 @@ export default class CreateAccount extends Component {
   handleSignUp = () => {
     const { username, email, name, password, phone } = this.state;
     // validate email
-    // const emailRegEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    // if (emailRegEx.test(email) === false)
     if (!validator.isEmail(email))
       return this.setState({
         messageType: "warning",
@@ -67,11 +65,6 @@ export default class CreateAccount extends Component {
       message: "Check if Your password is too weak or empty"
     });
     // validate address, name, password, phone is empty?
-    // if (username.trim() === "" ||
-    //   name.trim() === "" ||
-    //   password === "" ||
-    //   phone === ""
-    // )
     if (validator.isEmpty(username) ||
       validator.isEmpty(name) ||
       validator.isEmpty(password) ||
@@ -102,6 +95,7 @@ export default class CreateAccount extends Component {
       )
       .then(resp => {
         const { status } = resp;
+        
         if (status === 201) {
           this.setState({
             messageType: "success",
@@ -109,16 +103,20 @@ export default class CreateAccount extends Component {
             message: "Successfully created customer account"
           });
           this.props.onCreateAccountSucceed();
-        } else {
+        } else if(status===204){
+          console.log(resp);
+          this.setState({
+            messageType: "error",
+            isMessageOpen: true,
+            message: "This username does already exists!"
+          });
+        }
+        else{
           this.setState({
             messageType: "error",
             isMessageOpen: true,
             message: "Failed creating customer account"
           });
-          throw new Error(
-            "Something went wrong when  signing up, status ",
-            status
-          );
         }
       })
       .catch(err => {
@@ -167,6 +165,7 @@ export default class CreateAccount extends Component {
               <TextField
                 id="signUpPhone"
                 label="Phone *"
+              inputProps={{ maxLength: 10 }}
                 fullWidth
                 margin="normal"
                 onChange={this.handleInputChange}

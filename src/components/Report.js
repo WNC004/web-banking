@@ -218,7 +218,7 @@ class Reports extends Component {
                       autoFocus
                     >
                       {banks.map((bank, index) => (
-                        <MenuItem key={index} value={bank.id}>
+                        <MenuItem key={index} value={bank.bank_name}>
                           {bank.bank_name}
                         </MenuItem>
                       ))}

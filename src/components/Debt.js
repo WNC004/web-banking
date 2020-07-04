@@ -211,6 +211,7 @@ class Debts extends Component {
             message: "Successfully created new debt"
           });
           this.getListDebts();
+          this.getListDebtOthers();
         } else {
           this.setState({
             messageType: "error",

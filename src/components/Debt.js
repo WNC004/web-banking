@@ -610,18 +610,19 @@ class Debts extends Component {
             style={{ width: "600px", height: "auto", maxHeight: "1000px" }}
           >
            
-              {/* <React.Fragment>
-              <TextField
-                  id="messagePay"
-                  label="Message"
+              {<React.Fragment>
+              {/* <TextField
+                  disabled
                   autoFocus
                   fullWidth
                   margin="normal"
-                  onChange={this.handleInputChange}
-                  name="messagePay"
-                  value={messagePay}
-                />
-              </React.Fragment> */}
+                  value={amount.toLocaleString('vi', {style : 'currency', currency : 'VND'})}
+                /> */}
+                <Typography variant="title" component="h1">
+                  To Account: {toAccount}<br></br><br></br>
+                  Amount: {parseInt(amount).toLocaleString('vi', {style : 'currency', currency : 'VND'})}
+                </Typography>
+              </React.Fragment>}
             
           </DialogContent>
           <DialogActions>
@@ -633,6 +634,7 @@ class Debts extends Component {
             </Button>
           </DialogActions>
         </Dialog>
+        
       </React.Fragment>
     );
   }

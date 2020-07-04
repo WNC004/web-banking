@@ -184,7 +184,7 @@ export default class SignIn extends React.Component {
           this.setState({
             messageType: "error",
             isMessageOpen: true,
-            message: "Email or password was wrong"
+            message: "Username or password was wrong"
           });
           throw new Error(
             "Something went wrong when signing in, status ",

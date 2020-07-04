@@ -519,7 +519,7 @@ class PayAccClient extends Component {
             </span>,
             +feeType,
             msg,
-            createdAt
+            new Date(createdAt).toLocaleString()
           ];
         }),
         columns: [

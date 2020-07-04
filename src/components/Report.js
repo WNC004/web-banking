@@ -204,7 +204,7 @@ class Reports extends Component {
             </Typography>
         <Grid container>
           <Grid item xs={3}>
-          <FormControl fullWidth>
+          <FormControl fullWidth margin="normal">
                     <InputLabel htmlFor="payAccId">
                       Bank Name
                     </InputLabel>
@@ -216,6 +216,10 @@ class Reports extends Component {
                         id: "bankName"
                       }}
                       autoFocus
+                      // InputLabelProps={{
+                      //   shrink: true,
+                      // }}
+                    
                     >
                       {banks.map((bank, index) => (
                         <MenuItem key={index} value={bank.id}>
@@ -232,43 +236,60 @@ class Reports extends Component {
                       
                     </InputLabel>
           <TextField item xs={3}
+          style={{marginLeft:"30px"}}
             type="date"
                   id="from"
                   placeholder="From"
                   fullWidth
                   margin="normal"
+                  label="From"
                   onChange={this.handleInputChange}
                   name="from"
                   value={from}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
               </FormControl>
           </Grid>
           <Grid item xs={3}>
           <FormControl fullWidth>
-                    <InputLabel htmlFor="payAccId">
-                      
+                    <InputLabel htmlFor="payAccId" >
+                    
                     </InputLabel>
           <TextField
+          style={{marginLeft:"60px"}}
            type="date"
                   id="to"
                   placeholder="To"
                   fullWidth
+                  label="To"
                   margin="normal"
                   onChange={this.handleInputChange}
                   name="to"
                   value={to}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
                 />
                 </FormControl>
           </Grid>
           <Grid item xs={3} mb={0} pd={0}>
+          <FormControl fullWidth margin="normal">
+          {/* <InputLabel htmlFor="payAccId" >
+                    asâsasasasasasasasas
+                    </InputLabel> */}
           <Button
                   variant="contained"
                   color="primary"
-                  fullWidth
+                  size="large"
+          
+                  style={{marginTop:"10px", marginLeft:"90px", width:"100px"}}
                   onClick={() => this.filter()}
                 >
                   Filter
                 </Button>
+          </FormControl>
           </Grid>
           </Grid>
         </Paper> 

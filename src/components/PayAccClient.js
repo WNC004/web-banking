@@ -339,7 +339,7 @@ class PayAccClient extends Component {
       });
 
     axios
-      .get(`http://localhost:3001/histories/${payAccId}`, {
+      .get(`http://localhost:3001/histories-acc/${accNumber}`, {
         headers: {
           "x-access-token": getCookie("access_token")
         }
@@ -506,7 +506,8 @@ class PayAccClient extends Component {
           } = history;
           return [
             index + 1,
-            transactionType === "sent" ? toAccNumber : fromAccNumber,
+            fromAccNumber,
+            toAccNumber,
             amount,
             // transactionType.toUpperCase(),
             // <span style={{ color: transactionType === "sent" ? "#ff0000" : "#66ff99" }}>
@@ -524,7 +525,8 @@ class PayAccClient extends Component {
         }),
         columns: [
           "#",
-          "Sender/Receiver",
+          "From",
+          "To",
           "Amount",
           "Transaction type",
           "Extra fee",

@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  FormHelperText,
   DialogTitle
 } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
@@ -35,7 +36,10 @@ class Debts extends Component {
     toAccount: "",
     isDialogOpenTranfer: false,
     messagePay:"",
-    reason:""
+    reason:"",
+    otp: "",
+    isDialogConfirmOTP: false,
+    checkOtp: ""
   };
 
   getListDebts = () =>{
@@ -120,7 +124,11 @@ class Debts extends Component {
     this.setState({
       isDialogClosePayAccOpen: false,
       isDialogOpenTranfer: false,
-      debtId: ""
+      debtId: "",
+      isDialogConfirmOTP: false,
+      otp: "",
+      checkOtp:"",
+      messagePay:""
     });
   };
 
@@ -296,6 +304,45 @@ class Debts extends Component {
           })
   }
 
+  handleOpenOTP = () => {
+    
+    const clientName = getUserInfo("f_name");
+    const clientEmail = getUserInfo("f_email");
+    axios.post(
+      "http://localhost:3001/debt/send-otp",
+      {
+        clientEmail: clientEmail,
+        clientName: clientName
+      },
+      {
+        headers: {
+          "x-access-token": getCookie("access_token")
+        }
+      })
+    .then(resp => {
+      console.log(resp);
+      if (resp.status !== 201) {
+        this.setState({
+          messageType: "error",
+          isMessageOpen: true,
+          message:
+            "Sorry, failed sending request for OTP, please try again later"
+        });
+        throw new Error(
+          "Something went wrong when requesting for OTP, status ",
+          resp.status
+        );
+      }
+      else{
+        this.setState({
+          isDialogConfirmOTP: true,
+          checkOtp: resp.data.otp
+        });
+      }
+      
+    });
+  }
+
   handleTranfer = () => {
     const {
       customerId,
@@ -329,7 +376,10 @@ class Debts extends Component {
               debtId: "",
               amount:"",
               toAccount:"",
-              messagePay:""
+              messagePay:"",
+              isDialogConfirmOTP: false,
+              otp: "",
+              checkOtp:""
             });
             this.getListDebts();
             } else {
@@ -341,7 +391,10 @@ class Debts extends Component {
                 debtId: "",
                 amount:"",
                 toAccount:"",
-                messagePay:""
+                messagePay:"",
+                otp: "",
+                checkOtp:"",
+                isDialogConfirmOTP: false
               });
               throw new Error(
                 "Something went wrong when getting contacts list, status ",
@@ -405,7 +458,10 @@ class Debts extends Component {
       reason,
       toAccount,
       isDialogOpenTranfer,
-      messagePay
+      messagePay,
+      otp,
+      isDialogConfirmOTP,
+      checkOtp
     } = this.state;
 
     const data = debtsOwner.map((debt, index) => {
@@ -440,7 +496,7 @@ class Debts extends Component {
         account_creditor,
         createdAt,
         <div>
-        <Button variant="contained" color="primary" onClick={() => this.onPayIn(id, account, amount)}>
+        <Button variant="contained" color="primary" onClick={() => this.onPayIn(id, account_creditor, amount)}>
             Pay
         </Button>
         <Button variant="contained" color="secondary" onClick={() => this.onClosePayAcc(id)}>
@@ -610,27 +666,77 @@ class Debts extends Component {
             style={{ width: "600px", height: "auto", maxHeight: "1000px" }}
           >
            
-              {<React.Fragment>
-              {/* <TextField
-                  disabled
-                  autoFocus
-                  fullWidth
-                  margin="normal"
-                  value={amount.toLocaleString('vi', {style : 'currency', currency : 'VND'})}
-                /> */}
+              <React.Fragment>
+              
                 <Typography variant="title" component="h1">
                   To Account: {toAccount}<br></br><br></br>
                   Amount: {parseInt(amount).toLocaleString('vi', {style : 'currency', currency : 'VND'})}
                 </Typography>
-              </React.Fragment>}
+              </React.Fragment>
+              <TextField
+                  id="messagePay"
+                  label="Message"
+                  autoFocus
+                  fullWidth
+                  margin="normal"
+                  onChange={this.handleInputChange}
+                  name="messagePay"
+                  value={messagePay}
+                />
             
           </DialogContent>
           <DialogActions>
             <Button onClick={this.handleCloseClosePayAccDialog} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleTranfer} color="primary" autoFocus>
+            <Button onClick={this.handleOpenOTP} color="primary" autoFocus>
               Tranfer
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={isDialogConfirmOTP}
+          onClose={this.handleCloseClosePayAccDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {`Forgot Password`}
+          </DialogTitle>
+          <DialogContent
+            style={{ width: "600px", height: "auto", maxHeight: "1000px" }}
+          >
+           
+              <React.Fragment>
+              <TextField
+                  id="otp"
+                  label="OTP"
+                  autoFocus
+                  fullWidth
+                  margin="normal"
+                  onChange={this.handleInputChange}
+                  name="otp"
+                  value={otp}
+                />
+                <FormHelperText style={{ color: otp.length > 6 && "red" }}>
+                  OTP code is 6 characters long
+                </FormHelperText>
+                {otp.length === 6 && otp !== checkOtp && (
+                  <FormHelperText style={{ color: "red" }}>
+                    OTP unmatched
+                  </FormHelperText>
+                )}
+              </React.Fragment>
+            
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseClosePayAccDialog} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleTranfer} color="primary" autoFocus
+            disabled={otp.length !== 6 || otp !== checkOtp}>
+              Confirm
             </Button>
           </DialogActions>
         </Dialog>

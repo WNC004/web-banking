@@ -8,9 +8,7 @@ import {
 import Message from "./Message";
 import MustBeCustomer from "./HOCs/MustBeCustomer";
 import { getUserInfo } from "../utils/authHelper";
-import moment from 'moment';
 import * as cryptoJS from "crypto-js";
-import md5 from 'md5';
 
 class ExternalTransfer extends Component {
   constructor(props) {
@@ -179,7 +177,8 @@ class ExternalTransfer extends Component {
       feeType,
       currentBalance,
       transferAmount,
-      transferBank
+      transferBank,
+      receiverPhone
     } = this.state;
 
     console.log(
@@ -235,7 +234,7 @@ class ExternalTransfer extends Component {
           headers: {
             "x-access-token": getCookie("access_token"),
             "ts": ts,
-            "partner-code": 2,
+            "partner_code": 2,
             "sign": signature
         },
         }),
@@ -265,8 +264,11 @@ class ExternalTransfer extends Component {
               getOTP.status
             );
           }
+
+          console.log(getReceiver);
+
           
-          if (getReceiver.status !== 200) {
+          if (getReceiver.status !== 201) {
             this.setState({
               messageType: "error",
               isMessageOpen: true,
@@ -290,13 +292,18 @@ class ExternalTransfer extends Component {
               message: `No payment account attached to ${receiverPayAccNumber}, please try another one`
             });
           
-          console.log(getReceiver.data);
+          // const {
+          //   full_name: receiverName,
+          //   email: receiverEmail,
+          //   phone_number: receiverPhone,
+          // } = getReceiver.data;
+
           const {
             full_name: receiverName,
             email: receiverEmail,
-            phone_number: receiverPhone,
+            phone_number: receiverPhone
           } = getReceiver.data;
-        
+          
 
           const senderFee = +feeType === 1 ? 10000 : 0,
             receiverFee = +feeType === 2 ? 10000 : 0;
@@ -327,7 +334,6 @@ class ExternalTransfer extends Component {
             receiverEmail,
             receiverPhone,
             receiverPayAccNumber,
-            // receiverCurrentBalance,
             isDialogOTPOpen: true,
             isInContacts
           });
@@ -358,7 +364,6 @@ class ExternalTransfer extends Component {
       receiverPayAccId,
       receiverPayAccNumber,
       receiverName,
-      receiverCurrentBalance,
       feeType,
       transferMsg,
       transferBank,
@@ -375,7 +380,7 @@ class ExternalTransfer extends Component {
     
     const axiosArr = [
       axios.patch(
-        "http://localhost:3001/pay-acc/RSA/balance",
+        "http://localhost:3001/pay-acc/PGP/balance",
         {
           payAccId,
           senderCard: accNumber,
@@ -391,7 +396,7 @@ class ExternalTransfer extends Component {
         }
       ),
       axios.patch(
-        "http://localhost:3001/pay-acc/RSA/balance",
+        "http://localhost:3001/pay-acc/PGP/balance",
         {
           payAccId,
           senderCard: accNumber,
@@ -424,23 +429,23 @@ class ExternalTransfer extends Component {
           }
         }
       ),
-      // axios.post(
-      //   "http://localhost:3001/history",
-      //   {
-      //     payAccId: receiverPayAccId,
-      //     fromAccNumber: accNumber,
-      //     toAccNumber: receiverPayAccNumber,
-      //     amount: +transferAmount,
-      //     transactionType: "received",
-      //     feeType: -+receiverFee,
-      //     message: transferMsg
-      //   },
-      //   {
-      //     headers: {
-      //       "x-access-token": getCookie("access_token")
-      //     }
-      //   }
-      // )
+      axios.post(
+        "http://localhost:3001/history",
+        {
+          payAccId: receiverPayAccId,
+          fromAccNumber: accNumber,
+          toAccNumber: receiverPayAccNumber,
+          amount: +transferAmount,
+          transactionType: "received",
+          feeType: -+receiverFee,
+          message: transferMsg
+        },
+        {
+          headers: {
+            "x-access-token": getCookie("access_token")
+          }
+        }
+      )
     ];
 
     if (saveContact === true && isInContacts === false)

@@ -266,9 +266,10 @@ class ExternalTransfer extends Component {
           }
 
           console.log(getReceiver);
+          console.log(getReceiver.status);
 
           
-          if (getReceiver.status !== 201) {
+          if (getReceiver.status === 500) {
             this.setState({
               messageType: "error",
               isMessageOpen: true,
@@ -377,10 +378,28 @@ class ExternalTransfer extends Component {
     // call API
     const senderFee = +feeType === 1 ? 10000 : 0,
       receiverFee = +feeType === 2 ? 10000 : 0;
+
+    console.log(feeType);
+
+    var urlTransfer = "";
+
+    if(transferBank === "Truong Bank")
+    {
+      urlTransfer = "http://localhost:3001/pay-acc/RSA/balance";
+    }
+    else if(transferBank ==="PGP Bank")
+    {
+      urlTransfer =  "http://localhost:3001/pay-acc/PGP/balance";
+    }
+    else 
+    {
+      console.log("Not a transfer  !!!");
+    }    
+
     
     const axiosArr = [
       axios.patch(
-        "http://localhost:3001/pay-acc/PGP/balance",
+        urlTransfer,
         {
           payAccId,
           senderCard: accNumber,
@@ -396,7 +415,7 @@ class ExternalTransfer extends Component {
         }
       ),
       axios.patch(
-        "http://localhost:3001/pay-acc/PGP/balance",
+        urlTransfer,
         {
           payAccId,
           senderCard: accNumber,
@@ -429,23 +448,23 @@ class ExternalTransfer extends Component {
           }
         }
       ),
-      axios.post(
-        "http://localhost:3001/history",
-        {
-          payAccId: receiverPayAccId,
-          fromAccNumber: accNumber,
-          toAccNumber: receiverPayAccNumber,
-          amount: +transferAmount,
-          transactionType: "received",
-          feeType: -+receiverFee,
-          message: transferMsg
-        },
-        {
-          headers: {
-            "x-access-token": getCookie("access_token")
-          }
-        }
-      )
+      // axios.post(
+      //   "http://localhost:3001/history",
+      //   {
+      //     payAccId: receiverPayAccId,
+      //     fromAccNumber: accNumber,
+      //     toAccNumber: receiverPayAccNumber,
+      //     amount: +transferAmount,
+      //     transactionType: "received",
+      //     feeType: -+receiverFee,
+      //     message: transferMsg
+      //   },
+      //   {
+      //     headers: {
+      //       "x-access-token": getCookie("access_token")
+      //     }
+      //   }
+      // )
     ];
 
     if (saveContact === true && isInContacts === false)

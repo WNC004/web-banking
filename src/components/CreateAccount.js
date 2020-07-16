@@ -149,6 +149,7 @@ export default class CreateAccount extends Component {
                 label="Name *"
                 autoFocus
                 fullWidth
+                inputProps={{ maxLength: 45 }}
                 margin="normal"
                 onChange={this.handleInputChange}
                 name="name"
@@ -179,6 +180,7 @@ export default class CreateAccount extends Component {
                   id="signUpUsername"
                   label="Username *"
                   fullWidth
+                  inputProps={{ maxLength: 45 }}
                   margin="normal"
                   onChange={this.handleInputChange}
                   name="username"

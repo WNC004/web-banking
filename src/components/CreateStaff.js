@@ -107,6 +107,12 @@ export default class CreateStaff extends Component {
             isMessageOpen: true,
             message: "This username does already exists!"
           });
+        } else if(status===202){
+          this.setState({
+            messageType: "error",
+            isMessageOpen: true,
+            message: "This Email does already exists!"
+          });
         }
         else {
           this.setState({

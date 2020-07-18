@@ -107,10 +107,19 @@ export default class CreateStaff extends Component {
             isMessageOpen: true,
             message: "This username does already exists!"
           });
-          throw new Error(
-            "Something went wrong when signing up, status ",
-            status
-          );
+        } else if(status===202){
+          this.setState({
+            messageType: "error",
+            isMessageOpen: true,
+            message: "This Email does already exists!"
+          });
+        }
+        else {
+          this.setState({
+            messageType: "error",
+            isMessageOpen: true,
+            message: "Failed creating staff account"
+          });
         }
       })
       .catch(err => {

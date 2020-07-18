@@ -8,9 +8,7 @@ import {
 import Message from "./Message";
 import MustBeCustomer from "./HOCs/MustBeCustomer";
 import { getUserInfo } from "../utils/authHelper";
-import moment from 'moment';
 import * as cryptoJS from "crypto-js";
-import md5 from 'md5';
 
 class ExternalTransfer extends Component {
   constructor(props) {
@@ -179,7 +177,8 @@ class ExternalTransfer extends Component {
       feeType,
       currentBalance,
       transferAmount,
-      transferBank
+      transferBank,
+      receiverPhone
     } = this.state;
 
     console.log(
@@ -235,7 +234,7 @@ class ExternalTransfer extends Component {
           headers: {
             "x-access-token": getCookie("access_token"),
             "ts": ts,
-            "partner-code": 2,
+            "partner_code": 2,
             "sign": signature
         },
         }),
@@ -265,8 +264,12 @@ class ExternalTransfer extends Component {
               getOTP.status
             );
           }
+
+          console.log(getReceiver);
+          console.log(getReceiver.status);
+
           
-          if (getReceiver.status !== 200) {
+          if (getReceiver.status === 500) {
             this.setState({
               messageType: "error",
               isMessageOpen: true,
@@ -290,13 +293,18 @@ class ExternalTransfer extends Component {
               message: `No payment account attached to ${receiverPayAccNumber}, please try another one`
             });
           
-          console.log(getReceiver.data);
+          // const {
+          //   full_name: receiverName,
+          //   email: receiverEmail,
+          //   phone_number: receiverPhone,
+          // } = getReceiver.data;
+
           const {
             full_name: receiverName,
             email: receiverEmail,
-            phone_number: receiverPhone,
+            phone_number: receiverPhone
           } = getReceiver.data;
-        
+          
 
           const senderFee = +feeType === 1 ? 10000 : 0,
             receiverFee = +feeType === 2 ? 10000 : 0;
@@ -327,7 +335,6 @@ class ExternalTransfer extends Component {
             receiverEmail,
             receiverPhone,
             receiverPayAccNumber,
-            // receiverCurrentBalance,
             isDialogOTPOpen: true,
             isInContacts
           });
@@ -358,7 +365,6 @@ class ExternalTransfer extends Component {
       receiverPayAccId,
       receiverPayAccNumber,
       receiverName,
-      receiverCurrentBalance,
       feeType,
       transferMsg,
       transferBank,
@@ -372,10 +378,28 @@ class ExternalTransfer extends Component {
     // call API
     const senderFee = +feeType === 1 ? 10000 : 0,
       receiverFee = +feeType === 2 ? 10000 : 0;
+
+    console.log(feeType);
+
+    var urlTransfer = "";
+
+    if(transferBank === "Truong Bank")
+    {
+      urlTransfer = "http://localhost:3001/pay-acc/RSA/balance";
+    }
+    else if(transferBank ==="PGP Bank")
+    {
+      urlTransfer =  "http://localhost:3001/pay-acc/PGP/balance";
+    }
+    else 
+    {
+      console.log("Not a transfer  !!!");
+    }    
+
     
     const axiosArr = [
       axios.patch(
-        "http://localhost:3001/pay-acc/RSA/balance",
+        urlTransfer,
         {
           payAccId,
           senderCard: accNumber,
@@ -391,7 +415,7 @@ class ExternalTransfer extends Component {
         }
       ),
       axios.patch(
-        "http://localhost:3001/pay-acc/RSA/balance",
+        urlTransfer,
         {
           payAccId,
           senderCard: accNumber,

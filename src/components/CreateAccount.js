@@ -110,6 +110,12 @@ export default class CreateAccount extends Component {
             isMessageOpen: true,
             message: "This username does already exists!"
           });
+        } else if (status === 202) {
+          this.setState({
+            messageType: "error",
+            isMessageOpen: true,
+            message: "This Email does already exists!"
+          });
         }
         else{
           this.setState({
@@ -149,6 +155,7 @@ export default class CreateAccount extends Component {
                 label="Name *"
                 autoFocus
                 fullWidth
+                inputProps={{ maxLength: 45 }}
                 margin="normal"
                 onChange={this.handleInputChange}
                 name="name"
@@ -179,6 +186,7 @@ export default class CreateAccount extends Component {
                   id="signUpUsername"
                   label="Username *"
                   fullWidth
+                  inputProps={{ maxLength: 45 }}
                   margin="normal"
                   onChange={this.handleInputChange}
                   name="username"

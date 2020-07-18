@@ -339,7 +339,7 @@ class PayAccClient extends Component {
       });
 
     axios
-      .get(`http://localhost:3001/histories-acc/${accNumber}`, {
+      .get(`http://localhost:3001/histories/${payAccId}`, {
         headers: {
           "x-access-token": getCookie("access_token")
         }
@@ -350,7 +350,8 @@ class PayAccClient extends Component {
           this.setState({
             histories,
             isDialogHistoryPayAccOpen: true,
-            accNumber
+            accNumber,
+            payAccId
           });
         } else {
           this.setState({

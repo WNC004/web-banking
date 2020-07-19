@@ -230,13 +230,15 @@ class Reports extends Component {
                   </FormControl>
             
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={1}></Grid>
+          {/* <label style={{marginLeft:"30px"}}></label> */}
+          <Grid item xs={2}>
           <FormControl fullWidth>
                     <InputLabel htmlFor="payAccId">
                       
                     </InputLabel>
-          <TextField item xs={3}
-          style={{marginLeft:"30px"}}
+          <TextField 
+          // style={{marginLeft:"30px"}}
             type="date"
                   id="from"
                   placeholder="From"
@@ -252,13 +254,14 @@ class Reports extends Component {
                 />
               </FormControl>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={1}></Grid>
+          <Grid item xs={2}>
           <FormControl fullWidth>
                     <InputLabel htmlFor="payAccId" >
                     
                     </InputLabel>
           <TextField
-          style={{marginLeft:"60px"}}
+          // style={{marginLeft:"60px"}}
            type="date"
                   id="to"
                   placeholder="To"
@@ -274,7 +277,8 @@ class Reports extends Component {
                 />
                 </FormControl>
           </Grid>
-          <Grid item xs={3} mb={0} pd={0}>
+          <Grid item xs={1}></Grid>
+          <Grid item xs={1} mb={0} pd={0}>
           <FormControl fullWidth margin="normal">
           {/* <InputLabel htmlFor="payAccId" >
                     asâsasasasasasasasas
@@ -284,7 +288,7 @@ class Reports extends Component {
                   color="primary"
                   size="large"
           
-                  style={{marginTop:"10px", marginLeft:"90px", width:"100px"}}
+                  style={{marginTop:"10px", marginLeft:"0px", width:"100px"}}
                   onClick={() => this.filter()}
                 >
                   Filter

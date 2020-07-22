@@ -33,7 +33,11 @@ class Staffs extends Component {
 
   //   this.setState({ [name]: value });
   // };
+  
+  // handleEdit = () => {
+  //   const { email, name, phone } = this.state;
 
+  // }
 
 
   render() {
@@ -136,10 +140,11 @@ class Staffs extends Component {
               <span>Edit</span>
               <br />
               <input
-              type="text"
+              type="email"
               name="staffEmail"
               defaultValue={this.props.staffEmail}
               placeholder="Email"
+              maxlength="45"
               onChange={this.props.handleInputChange}
               />
               <input
@@ -147,6 +152,7 @@ class Staffs extends Component {
               name="staffName"
               defaultValue={this.props.staffName}
               placeholder="Name"
+              maxlength="45"
               onChange={this.props.handleInputChange}
               />
               <input
@@ -154,6 +160,7 @@ class Staffs extends Component {
               name="phone"
               defaultValue={this.props.phone}
               placeholder="Phone"
+              maxlength="10"
               onChange={this.props.handleInputChange}
               />
             </DialogContentText>

@@ -178,17 +178,32 @@ export const getStaffsList = () => dispatch =>
                 reload: !reload
               }
             });
-          } else {
+          } else if (status === 204) {
             dispatch({
               type: staffsConstants.HANDLE_EDIT_DIALOG_CONFIRM_ERROR,
               payload: {
-                isEditDialogOpen: false,
+                isEditDialogOpen: true,
                 staffId: "",
                 staffEmail: "",
                 staffName: "",
                 isMessageOpen: true,
                 messageType: "error",
-                message: "Failed edit staff"
+                message: "Fail to edit staff. This phone number does already exists!",
+                // reload: !reload
+              }
+            });
+          }
+          else if (status === 202) {
+            dispatch({
+              type: staffsConstants.HANDLE_EDIT_DIALOG_CONFIRM_ERROR,
+              payload: {
+                isEditDialogOpen: true,
+                staffId: "",
+                staffEmail: "",
+                staffName: "",
+                isMessageOpen: true,
+                messageType: "error",
+                message: "Failed to edit staff. This email does already exists!"
               }
             });
             throw new Error(
@@ -201,7 +216,7 @@ export const getStaffsList = () => dispatch =>
           dispatch({
             type: staffsConstants.HANDLE_EDIT_DIALOG_CONFIRM_ERROR,
             payload: {
-              isEditDialogOpen: false,
+              isEditDialogOpen: true,
               staffId: "",
               staffEmail: "",
               staffName: "",

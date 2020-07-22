@@ -78,6 +78,15 @@ const staffsReducer = (state = initState, action) => {
           ...state,
           ...action.payload
         };
+        case staffsConstants.HANDLE_EDIT_DIALOG_CONFIRM_ERROR:
+        return {
+          ...state,
+          isMessageOpen: false,
+          messageType: "",
+          message: "",
+          ...action.payload
+          
+        };
       case staffsConstants.HANDLE_INPUT_CHANGE:
         return { ...state, [action.payload.name]: action.payload.value };
     default:

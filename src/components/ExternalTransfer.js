@@ -379,7 +379,16 @@ class ExternalTransfer extends Component {
     const senderFee = +feeType === 1 ? 10000 : 0,
       receiverFee = +feeType === 2 ? 10000 : 0;
 
-    console.log(feeType);
+    var updateSenderBalance = 0 ;
+    if(+feeType === 1) 
+    {
+      updateSenderBalance = currentBalance - +transferAmount - 10000; 
+    }
+    else 
+    {
+      updateSenderBalance = currentBalance - +transferAmount; 
+    }
+    console.log(updateSenderBalance);
 
     var urlTransfer = "";
 
@@ -396,6 +405,7 @@ class ExternalTransfer extends Component {
       console.log("Not a transfer  !!!");
     }    
 
+    const refreshCurrentBalance = updateSenderBalance;
     
     const axiosArr = [
       axios.patch(
@@ -406,24 +416,9 @@ class ExternalTransfer extends Component {
           newBalance: +transferAmount,
           message: transferMsg,
           receiveCard: receiverPayAccNumber,
-          updateBalance: currentBalance - +transferAmount - senderFee
+          // updateBalance: currentBalance - +transferAmount - senderFee
+          updateBalance: updateSenderBalance
         },  
-        {
-          headers: {
-            "x-access-token": getCookie("access_token")
-          }
-        }
-      ),
-      axios.patch(
-        urlTransfer,
-        {
-          payAccId,
-          senderCard: accNumber,
-          newBalance: transferAmount - receiverFee,
-          message: transferMsg,
-          receiveCard: receiverPayAccNumber,
-          updateBalance: currentBalance - +transferAmount
-        },
         {
           headers: {
             "x-access-token": getCookie("access_token")
@@ -448,23 +443,6 @@ class ExternalTransfer extends Component {
           }
         }
       ),
-      // axios.post(
-      //   "http://localhost:3001/history",
-      //   {
-      //     payAccId: receiverPayAccId,
-      //     fromAccNumber: accNumber,
-      //     toAccNumber: receiverPayAccNumber,
-      //     amount: +transferAmount,
-      //     transactionType: "received",
-      //     feeType: -+receiverFee,
-      //     message: transferMsg
-      //   },
-      //   {
-      //     headers: {
-      //       "x-access-token": getCookie("access_token")
-      //     }
-      //   }
-      // )
     ];
 
     if (saveContact === true && isInContacts === false)
@@ -490,13 +468,10 @@ class ExternalTransfer extends Component {
         axios.spread(
           (
             updateSenderPayAcc,
-            updateReceiverPayAcc,
             sendHistory,
-            // receiveHistory
           ) => {
             if (
-              updateSenderPayAcc.status !== 201 ||
-              updateReceiverPayAcc.status !== 201
+              updateSenderPayAcc.status !== 201 
             ) {
               this.setState({
                 messageType: "error",
@@ -509,7 +484,6 @@ class ExternalTransfer extends Component {
               );
             }
 
-            // if (sendHistory.status !== 201 || receiveHistory.status !== 201) 
             if (sendHistory.status !== 201 ) 
             {
               this.setState({
@@ -525,16 +499,15 @@ class ExternalTransfer extends Component {
 
             if (
               updateSenderPayAcc.status === 201 &&
-              updateReceiverPayAcc.status === 201 &&
               sendHistory.status === 201 
-              // && receiveHistory.status === 201
             )
+            {
               this.setState(
                 {
                   isDialogOTPOpen: false,
                   messageType: "success",
                   isMessageOpen: true,
-                  message: "Successfully operated the transaction",
+                  message: "Successfully conducted the transaction",
                   // reset form
                   receiverPayAccNumber: "",
                   transferAmount: "",
@@ -542,17 +515,14 @@ class ExternalTransfer extends Component {
                   transferBank: "",
                   OTP: "",
                   checkOTP: "",
-                  currentBalance:
-                    +currentBalance -
-                    +transferAmount -
-                    (+feeType === 1 ? 10000 : 0),
+                  // currentBalance: +currentBalance - +transferAmount - +senderFee,
+                  currentBalance: refreshCurrentBalance,
                   saveContact: true,
                   isInContacts: true
                 }, // refresh payment accounts
                 this.setState({ feeType: "1" }, this.getPayAccsList)
               );
-
-              
+            }             
           }
         )
       )

@@ -9,6 +9,7 @@ import { Button, Grid, Paper, TextField, Typography,  Dialog,
 import Recaptcha from "react-recaptcha";
 import Message from "./Message";
 import { checkAuth, signIn } from "../utils/authHelper";
+import validator from "validator";
 
 export default class SignIn extends React.Component {
   state = {
@@ -71,6 +72,13 @@ export default class SignIn extends React.Component {
         messageType: "warning",
         isMessageOpen: true,
         message: "Check if email were in invalid format or empty"
+      });
+
+    if(validator.isLength(newPassword, {min: 0, max: 7}))
+      return this.setState({
+        messageType: "warning",
+        isMessageOpen: true,
+        message: "Check if Your password is too weak or empty"
       });
 
     if (newPassword !== newPasswordConfirm){

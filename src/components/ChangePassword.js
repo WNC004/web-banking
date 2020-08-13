@@ -6,6 +6,7 @@ import {
   TextField
 } from "@material-ui/core";
 import axios from "axios";
+import validator from "validator";
 import Message from "./Message";
 import { getUserInfo } from "../utils/authHelper";
 import { getCookie } from "tiny-cookie";
@@ -34,6 +35,13 @@ class ChangePassword extends Component {
     console.log(newPassword);
     // validate username, password
     if (newPassword === "" || newPasswordConfirm === "") return;
+
+    if(validator.isLength(newPassword, {min: 0, max: 7}))
+    return this.setState({
+      messageType: "warning",
+      isMessageOpen: true,
+      message: "Check if Your password is too weak or empty"
+    });
 
     if (newPassword !== newPasswordConfirm){
       this.setState({

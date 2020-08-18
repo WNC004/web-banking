@@ -59,7 +59,7 @@ export class PayAccStaffContainer extends Component {
     return (
       <Dashboard
         screen={<PayAccStaff {...this.props} />}
-        title="Payment Accounts"
+        title="Customer Accounts"
       />
     );
   }

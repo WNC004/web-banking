@@ -98,7 +98,7 @@ class PayAccStaff extends Component {
         )}
 
         <MUIDataTable
-          title={"Payment accounts list"}
+          title={"Customer accounts list"}
           data={data}
           columns={columns}
           options={options}

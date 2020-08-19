@@ -74,6 +74,13 @@ export default class CreateStaff extends Component {
         isMessageOpen: true,
         message: "Check if any required filed were empty"
       });
+    //validate name is string
+    if (!validator.isAlpha(name))
+      return this.setState({
+        messageType: "warning",
+        isMessageOpen: true,
+        message: "Checks if The Name uses special characters or numbers"
+      });
 
     axios
       .post(

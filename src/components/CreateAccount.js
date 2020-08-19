@@ -91,11 +91,11 @@ export default class CreateAccount extends Component {
       .post(
         "http://localhost:3001/auth/user",
         {
-          Username: username,
+          Username: username.trim(),
           Password: password,
-          Name: name,
-          Phone: phone,
-          Email: email,
+          Name: name.trim(),
+          Phone: phone.trim(),
+          Email: email.trim(),
           Type: "1"
         },
         {

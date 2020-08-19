@@ -76,12 +76,17 @@ export default class CreateAccount extends Component {
         message: "Check if any required filed were empty"
       });
     //validate name is string
-    if (!validator.isAlpha(name))
-    return this.setState({
-      messageType: "warning",
-      isMessageOpen: true,
-      message: "Checks if The Name uses special characters or numbers"
-    });
+    const symbol = /[!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]/;
+    const number = /[0-9]/;
+    var i;
+    for ( i = 0; i < name.length; i++) {
+      if (number.test(name[i]) === true || symbol.test(name[i]) === true)
+      return this.setState({
+        messageType: "warning",
+        isMessageOpen: true,
+        message: "Checks if The Name uses special characters or numbers"
+      });
+    }
     axios
       .post(
         "http://localhost:3001/auth/user",
